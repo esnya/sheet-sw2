@@ -22,5 +22,9 @@
   "bugs": {
     "url": "https://github.com/ukatama/sheet-sw2/issues"
   },
-  "homepage": "https://github.com/ukatama/sheet-sw2"
+  "homepage": "https://github.com/ukatama/sheet-sw2",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-react": "^3.0.1"
+  }
 }

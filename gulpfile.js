@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var plumber = require('gulp-plumber');
 var react = require('gulp-react');
 var sourcemaps = require('gulp-sourcemaps');
+var webserver = require('gulp-webserver');
 
 var browserify = require('browserify');
 
@@ -34,5 +35,16 @@ gulp.task('scripts', ['jsx'], function () {
 gulp.task('watch', function () {
     gulp.watch('jsx/**/*.jsx', ['scripts']);
 });
+
+gulp.task('webserver', function () {
+    gulp.src('.')
+        .pipe(webserver({
+            livereload: true,
+            directoryListening: true,
+            open: true
+        }));
+});
+
+gulp.task('ww', ['watch', 'webserver']);
 
 gulp.task('default', ['scripts']);

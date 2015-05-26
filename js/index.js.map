@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.jsx"],"names":[],"mappings":"AAAA,YAAY,CAAC;;AAEb,IAAI,KAAK,GAAG,OAAO,CAAC,SAAS,CAAC,CAAC;AAC/B,KAAK,EAAE,CAAC","file":"index.js","sourcesContent":["'use strict';\r\n\r\nvar hello = require('./hello');\r\nhello();\r\n"],"sourceRoot":"/source/"}

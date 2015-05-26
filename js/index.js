@@ -2,8 +2,12 @@
 
 var SW2CharacterSheet = require('./sw2/CharacterSheet');
 
+var character = {
+    name: "Mr. Test"
+};
+
 React.render(
-    React.createElement(SW2CharacterSheet, null),
+    React.createElement(SW2CharacterSheet, {data: character}),
     document.body
 );
 

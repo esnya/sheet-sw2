@@ -5,7 +5,10 @@ module.exports = React.createClass({displayName: "exports",
     render: function () {
         return (
             React.createElement("div", {class: "sw2-character-sheet"}, 
-                "stub"
+                React.createElement("header", null, 
+                    React.createElement("h1", null, this.props.data.name)
+                ), 
+                "name"
             )
         );
     }
@@ -17,8 +20,12 @@ module.exports = React.createClass({displayName: "exports",
 
 var SW2CharacterSheet = require('./sw2/CharacterSheet');
 
+var character = {
+    name: "Mr. Test"
+};
+
 React.render(
-    React.createElement(SW2CharacterSheet, null),
+    React.createElement(SW2CharacterSheet, {data: character}),
     document.body
 );
 

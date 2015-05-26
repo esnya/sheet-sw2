@@ -36,6 +36,8 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
-    "axios": "^0.5.4"
+    "axios": "^0.5.4",
+    "normalize.css": "^3.0.3",
+    "normalize.less": "^1.0.0"
   }
 }

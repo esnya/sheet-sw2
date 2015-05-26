@@ -14,10 +14,20 @@ module.exports = React.createClass({displayName: "exports",
         var type = this.props.type || "text";
         var id = getId(type);
 
+        var contents = [];
+        contents.push(
+            React.createElement("input", {id: id, type: type, value: this.props.value, readOnly: this.props.readOnly, onChange: this.handleChange})
+        );
+
+        if (this.props.label) {
+            contents.push(
+                React.createElement("label", {htmlFor: id}, this.props.label) 
+            );
+        }
+
         return (
             React.createElement("div", {className: "input-container"}, 
-                React.createElement("input", {id: id, type: type, value: this.props.value, onChange: this.handleChange}), 
-                React.createElement("label", {htmlFor: id}, this.props.label)
+                contents
             )
         );
     }

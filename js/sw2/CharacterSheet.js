@@ -15,6 +15,7 @@ module.exports = React.createClass({displayName: "exports",
         }.bind(this));
     },
     handleChange: function (key, newValue) {
+        console.log(key + ': ' + this.state.data[key] + ' -> ' + newValue);
         this.state.data[key] = newValue;
         this.setState({
             data: this.state.data
@@ -24,7 +25,8 @@ module.exports = React.createClass({displayName: "exports",
         return (
             React.createElement("div", {className: "sw2-character-sheet"}, 
                 React.createElement("header", null, 
-                    React.createElement("h1", null, this.state.data.name)
+                    React.createElement("h1", null, " ", this.state.data.name, " ", React.createElement("span", {className: "user-id"}, this.state.data.user_id))
+                    
                 ), 
                 React.createElement(Character, {data: this.state.data, onChange: this.handleChange})
             )

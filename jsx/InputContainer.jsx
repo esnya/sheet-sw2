@@ -14,10 +14,20 @@ module.exports = React.createClass({
         var type = this.props.type || "text";
         var id = getId(type);
 
+        var contents = [];
+        contents.push(
+            <input id={id} type={type} value={this.props.value} readOnly={this.props.readOnly} onChange={this.handleChange}/>
+        );
+
+        if (this.props.label) {
+            contents.push(
+                <label htmlFor={id}>{this.props.label}</label> 
+            );
+        }
+
         return (
             <div className="input-container">
-                <input id={id} type={type} value={this.props.value} onChange={this.handleChange}/>
-                <label htmlFor={id}>{this.props.label}</label>
+                {contents}
             </div>
         );
     }

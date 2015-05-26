@@ -14,19 +14,14 @@
     "abilities": [9, 9, 9, 7, 8, 4],
     "growths": [8, 11, 6, 4, 16, 5],
     "skills": [
-        {
-            "name": "ファイター",
-            "level": 10
-        },
-        {
-            "name": "スカウト",
-            "level": 9
-        },
-        {
-            "name": "エンハンサー",
-            "level": 2
-        }
-
+        {"name": "ファイター", "level": 10},
+        {"name": "スカウト", "level": 9},
+        {"name": "エンハンサー", "level": 2},
+        {"name": "バード", "level": 1},
+        {"name": "ライダー", "level": 1},
+        {"name": "アルケミスト", "level": 1},
+        {"name": "ウォーリーダー", "level": 1},
+        {"name": "ミスティック", "level": 1}
     ],
     "weapons": [
         {
@@ -83,7 +78,7 @@
         "deposit": 10,
         "debt": 20
     },
-    "combat_features": [
+    "combat_feats": [
         {
             "name": "両手利き",
             "auto": false,
@@ -148,9 +143,10 @@
             "effect": "探索しやがれ"
         }
     ],
-    "alichemist_skills": [
+    "alchemist_skills": [
         {
             "name": "賦術1",
+            "card": "カード",
             "effect": "よく知らない"
         }
     ],
@@ -164,6 +160,7 @@
     "mistic_skills": [
         {
             "name": "占瞳1",
+            "item": "ロッド",
             "effect": "占瞳って英語で何"
         }
     ]

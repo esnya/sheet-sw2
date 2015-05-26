@@ -1,22 +1,23 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-
-var _counter = {};
+var _counter = 0;
 
 var getId = function (prefix) {
-    var n = _counter[prefix] = (_counter[prefix] || 0) + 1;
-    return 'input-container-input-' + prefix + '-' + n;
-}
+    return 'input-container-input-' + (++_counter);
+};
 
 module.exports = React.createClass({displayName: "exports",
+    handleChange: function (event) {
+        this.props.onChange(event.target.value);
+    },
     render: function () {
         var type = this.props.type || "text";
         var id = getId(type);
 
         return (
             React.createElement("div", {className: "input-container"}, 
-                React.createElement("input", {id: id, type: type, value: this.props.value}), 
+                React.createElement("input", {id: id, type: type, value: this.props.value, onChange: this.handleChange}), 
                 React.createElement("label", {htmlFor: id}, this.props.label)
             )
         );
@@ -31,12 +32,20 @@ var InputContainer = require('../InputContainer');
 
 module.exports = React.createClass({displayName: "exports",
     render: function () {
-        var data = this.props.data;
+        var inputContainer = function (key, label) {
+            var onChange =function (value) {
+                this.props.onChange(key, value);
+            }.bind(this); 
+
+            return (
+                React.createElement(InputContainer, {label: label, value: this.props.data[key], onChange: onChange})
+            );
+        }.bind(this);
 
         return (
             React.createElement("div", {className: "sw2-character"}, 
-                React.createElement(InputContainer, {label: "名前", value: data.name}), 
-                React.createElement(InputContainer, {label: "種族", value: data.race})
+                inputContainer('name', '名前'), 
+                inputContainer('race', '種族')
             )
         );
     }
@@ -60,13 +69,19 @@ module.exports = React.createClass({displayName: "exports",
             });
         }.bind(this));
     },
+    handleChange: function (key, newValue) {
+        this.state.data[key] = newValue;
+        this.setState({
+            data: this.state.data
+        });
+    },
     render: function () {
         return (
             React.createElement("div", {className: "sw2-character-sheet"}, 
                 React.createElement("header", null, 
                     React.createElement("h1", null, this.state.data.name)
                 ), 
-                React.createElement(Character, {data: this.state.data})
+                React.createElement(Character, {data: this.state.data, onChange: this.handleChange})
             )
         );
     }

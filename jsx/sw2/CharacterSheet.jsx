@@ -14,13 +14,19 @@ module.exports = React.createClass({
             });
         }.bind(this));
     },
+    handleChange: function (key, newValue) {
+        this.state.data[key] = newValue;
+        this.setState({
+            data: this.state.data
+        });
+    },
     render: function () {
         return (
             <div className="sw2-character-sheet">
                 <header>
                     <h1>{this.state.data.name}</h1>
                 </header>
-                <Character data={this.state.data} />
+                <Character data={this.state.data} onChange={this.handleChange}/>
             </div>
         );
     }

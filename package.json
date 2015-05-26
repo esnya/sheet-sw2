@@ -25,6 +25,8 @@
   "homepage": "https://github.com/ukatama/sheet-sw2",
   "devDependencies": {
     "gulp": "^3.8.11",
-    "gulp-react": "^3.0.1"
+    "gulp-plumber": "^1.0.1",
+    "gulp-react": "^3.0.1",
+    "gulp-sourcemaps": "^1.5.2"
   }
 }

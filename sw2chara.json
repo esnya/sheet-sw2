@@ -1,0 +1,170 @@
+{
+    "id": "test-character-id",
+    "name": "Mr. テスト",
+    "user_id": "alice",
+    "race": "人間",
+    "sex": "男",
+    "age": "20歳",
+    "fumbles": 1,
+    "experience": 50,
+    "nationality": "冒険者",
+    "skill": 8,
+    "body": 9,
+    "mind": 4,
+    "abilities": [9, 9, 9, 7, 8, 4],
+    "growths": [8, 11, 6, 4, 16, 5],
+    "skills": [
+        {
+            "name": "ファイター",
+            "level": 10
+        },
+        {
+            "name": "スカウト",
+            "level": 9
+        },
+        {
+            "name": "エンハンサー",
+            "level": 2
+        }
+
+    ],
+    "weapons": [
+        {
+            "name": "剣",
+            "str_req": 10,
+            "to_use": "1H両",
+            "accuracy": -1,
+            "impact": 20,
+            "critical": 11,
+            "damage": 1,
+            "impacts": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "memo": "でっち上げデータ"
+        }
+    ],
+    "armor": {
+        "name": "ソフトレザー",
+        "str_req": 7,
+        "protection": 2,
+        "evasion": 0,
+        "memo": "適当"
+    },
+    "shield": {
+        "name": "バックラー",
+        "str_req": 1,
+        "protection": 0,
+        "evasion": 1,
+        "memo": "適当"
+    },
+    "evasion_skill": "ファイター",
+    "notes": "経歴やメモ",
+    "inventory": "所持品",
+    "supplies": [
+        {
+            "name": "救命草",
+            "count": 3
+        },
+        {
+            "name": "魔香草",
+            "count": 1
+        }
+    ],
+    "ornaments": {
+        "head": {
+            "name": "髪飾り",
+            "effect": "かっこいい"
+        },
+        "left_hand": {
+            "name": "巧みの指輪",
+            "effect": "器用度+1"
+        }
+    },
+    "money": {
+        "on_hand": 500,
+        "deposit": 10,
+        "debt": 20
+    },
+    "combat_features": [
+        {
+            "name": "両手利き",
+            "auto": false,
+            "effect": "効果"
+        },
+        {
+            "name": "自動習得の何か",
+            "auto": true,
+            "effect": "効果"
+        }
+    ],
+    "languages": [
+        {
+            "name": "地方語（ザルツ）",
+            "talk": true,
+            "write": true
+        },
+        {
+            "name": "地方語（エイギア）",
+            "talk": true,
+            "write": false
+        }
+    ],
+    "honorable_items": [
+        {
+            "name": "コネ1",
+            "value": "100"
+        },
+        {
+            "name": "コネ2",
+            "value": "200"
+        }
+    ],
+    "honor": 20,
+    "techniques": [
+        {
+            "name": "ビートルスキン",
+            "effect": "虫"
+        },
+        {
+            "name": "キャッツアイ",
+            "effect": "猫"
+        }
+    ],
+    "instrument": "リュート",
+    "pet": "蛙",
+    "songs": [
+        {
+            "name": "スリーピー",
+            "introduction": "無し",
+            "effect": "こんなのあったかどうか"
+        },
+        {
+            "name": "ヌーディー",
+            "introduction": "30s",
+            "effect": "適当"
+        }
+    ],
+    "riding_skills": [
+        {
+            "name": "探索指令",
+            "effect": "探索しやがれ"
+        }
+    ],
+    "alichemist_skills": [
+        {
+            "name": "賦術1",
+            "effect": "よく知らない"
+        }
+    ],
+    "warleader_skills": [
+        {
+            "name": "鼓咆1",
+            "effect": "こほー"
+
+        }
+    ],
+    "mistic_skills": [
+        {
+            "name": "占瞳1",
+            "effect": "占瞳って英語で何"
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "sheet-sw2",
+  "version": "1.0.0",
+  "description": "Online character sheet of Sword World 2.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ukatama/sheet-sw2.git"
+  },
+  "keywords": [
+    "trpg",
+    "sw2",
+    "sword",
+    "world",
+    "2.0"
+  ],
+  "author": "ukatama",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ukatama/sheet-sw2/issues"
+  },
+  "homepage": "https://github.com/ukatama/sheet-sw2"
+}

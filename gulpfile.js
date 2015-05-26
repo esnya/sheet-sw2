@@ -1,4 +1,6 @@
 var gulp = require('gulp');
+var concat = require('gulp-concat');
+var less = require('gulp-less');
 var plumber = require('gulp-plumber');
 var react = require('gulp-react');
 var sourcemaps = require('gulp-sourcemaps');
@@ -32,8 +34,19 @@ gulp.task('scripts', ['jsx'], function () {
     .pipe(gulp.dest('.'));
 });
 
+gulp.task('styles', function () {
+    return gulp.src('less/**/*.less')
+        .pipe(plumber())
+        .pipe(sourcemaps.init())
+        .pipe(less())
+        .pipe(concat('style.css'))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('css'));
+});
+
 gulp.task('watch', function () {
     gulp.watch('jsx/**/*.jsx', ['scripts']);
+    gulp.watch('less/**/*.less', ['styles']);
 });
 
 gulp.task('webserver', function () {
@@ -47,4 +60,4 @@ gulp.task('webserver', function () {
 
 gulp.task('ww', ['watch', 'webserver']);
 
-gulp.task('default', ['scripts']);
+gulp.task('default', ['scripts', 'styles']);

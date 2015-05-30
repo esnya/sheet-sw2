@@ -25,8 +25,18 @@ module.exports = React.createClass({
             );
         }
 
+        var className = 'input-container';
+
+        if (this.props.value == null || this.props.value == '') {
+            className += ' empty';
+        }
+
+        if (this.props.className) {
+            className += ' ' + this.props.className;
+        }
+
         return (
-            <div className="input-container">
+            <div className={className}>
                 {contents}
             </div>
         );

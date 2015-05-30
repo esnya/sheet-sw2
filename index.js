@@ -26,8 +26,18 @@ module.exports = React.createClass({displayName: "exports",
             );
         }
 
+        var className = 'input-container';
+
+        if (this.props.value == null || this.props.value == '') {
+            className += ' empty';
+        }
+
+        if (this.props.className) {
+            className += ' ' + this.props.className;
+        }
+
         return (
-            React.createElement("div", {className: "input-container"}, 
+            React.createElement("div", {className: className}, 
                 contents
             )
         );
@@ -92,7 +102,7 @@ module.exports = React.createClass({displayName: "exports",
             }.bind(this); 
 
             return (
-                React.createElement(InputContainer, {label: label, type: options.type, value: this.props.data[key], readOnly: options.readOnly, onChange: onChange})
+                React.createElement(InputContainer, {label: label, type: options.type, value: this.props.data[key], className: options.className, readOnly: options.readOnly, onChange: onChange})
             );
         }.bind(this);
 
@@ -182,15 +192,19 @@ module.exports = React.createClass({displayName: "exports",
                     "Icon/Image"
                 ), 
                 React.createElement("div", {className: "panel"}, 
-                    inputContainer('name', '名前'), 
-                    inputContainer('race', '種族'), 
-                    inputContainer('sex', '性別'), 
-                    inputContainer('age', '年齢'), 
-                    inputContainer('fumbles', '1ゾロ', {type: 'number'}), 
-                    inputContainer('experience', '経験点', {type: 'number'}), 
-                    inputContainer('used_experience', '使用経験点', {readOnly: true}), 
-                    inputContainer('nationality', '生まれ'), 
-                    inputContainer('growth_count', '成長回数', {readOnly: true})
+                    React.createElement("div", {className: "flex column"}, 
+                        inputContainer('name', '名前', {className: 'fill'}), 
+                        inputContainer('race', '種族', {className: 'fill'}), 
+                        inputContainer('sex', '性別', {className: 'fill'}), 
+                        inputContainer('age', '年齢', {className: 'fill'})
+                    ), 
+                    React.createElement("div", {className: "flex column"}, 
+                        inputContainer('fumbles', '1ゾロ', {type: 'number', className: 'fill'}), 
+                        inputContainer('experience', '経験点', {type: 'number', className: 'fill'}), 
+                        inputContainer('used_experience', '使用経験点', {readOnly: true, className: 'fill'}), 
+                        inputContainer('nationality', '生まれ', {className: 'fill'}), 
+                        inputContainer('growth_count', '成長回数', {readOnly: true, className: 'fill'})
+                    )
                 ), 
                 React.createElement("div", {className: "panel"}, 
                     "Abilities"

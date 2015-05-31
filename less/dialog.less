@@ -1,0 +1,43 @@
+@import (reference) "panel.less";
+
+.dialog {
+    .container {
+        position: fixed;
+        top: 0;
+        z-index: 100000;
+
+        background-color: white;
+
+        .panel();
+
+        transition: all 0.2s ease-in-out;
+
+        header {
+            text-align: center;
+        }
+        footer {
+            text-align: right;
+        }
+    }
+
+    .screen {
+        z-index: 99999;
+        background-color: rgba(0, 0, 0, 0.25);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transition: all 0.2s ease-in-out;
+    }
+
+    &.hidden {
+        .container {
+            top: 100%;
+        }
+        .screen {
+            opacity: 0;
+            display: none;
+        }
+    }
+}

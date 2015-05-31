@@ -5,8 +5,16 @@ var Ability = require('./Ability');
 var Skill = require('./Skill');
 var InputContainer = require('../InputContainer');
 var InputTable = require('../InputTable');
+var Dialog = require('../Dialog');
 
 module.exports = React.createClass({
+    getInitialState: function () {
+        return {
+            dialog: {
+                ability: false
+            }
+        };
+    },
     render: function () {
         var inputContainer = function (key, label, options) {
             options = options || {};
@@ -116,6 +124,11 @@ module.exports = React.createClass({
                 <div className="row">
                     <div className="panel ability">
                         <Ability data={this.props.data}/>
+                        <button onClick={function () {
+                            this.setState({
+                                dialog: {ability: true}
+                            });
+                        }.bind(this)}>✎</button>
                     </div>
                     <div className="panel basic">
                         <div className="row">
@@ -279,6 +292,55 @@ module.exports = React.createClass({
                     </div>
                 </div>
                 {appendix}
+                <Dialog visible={this.state.dialog.ability} title="能力値" onAction={function () {
+                    this.setState({
+                        dialog: {ability: false}
+                    });
+                }.bind(this)}>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th colSpan="2">基本値</th>
+                                <th>成長</th>
+                                <th>補正</th>
+                                <th>能力値</th>
+                                <th>ボーナス</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                (function () {
+                                    var row = [];
+                                    for (var i = 0; i < 6; ++i) {
+                                        var cols = [];
+
+                                        if (i % 2 == 0) {
+                                            cols.push(<td rowSpan="2">{'技体心'.charAt(i / 2)}</td>);
+                                        }
+                                        cols.push(<td>{['器用度', '敏捷度', '筋力', '生命力', '知力', '精神力'][i]}</td>);
+
+                                        if (i % 2 == 0) {
+                                            cols.push(<td rowSpan="2">{this.props.data[['skill', 'body', 'mind'][i / 2]]}</td>);
+                                        }
+                                        
+                                        if (this.props.data.abilities) {
+                                            cols.push(<td>{inputContainer('abilities.' + i, null, {type: 'number'})}</td>);
+                                            cols.push(<td>{inputContainer('growths.' + i, null, {type: 'number'})}</td>);
+                                            cols.push(<td>{inputContainer('corrects.' + i, null, {type: 'number', readOnly: true})}</td>);
+                                            cols.push(<td>{inputContainer('sums.' + i, null, {type: 'number', readOnly: true})}</td>);
+                                            cols.push(<td>{inputContainer('bonuses.' + i, null, {type: 'number', readOnly: true})}</td>);
+                                        }
+
+                                        row.push(<tr>{cols}</tr>);
+                                    }
+                                    return row;
+                                }.bind(this))()
+                            }
+                        </tbody>
+                    </table>
+                </Dialog>
             </div>
         );
     }

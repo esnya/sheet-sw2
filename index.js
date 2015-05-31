@@ -1,6 +1,41 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
+var Dialog = React.createClass({displayName: "Dialog",
+    render: function () {
+        var actions = (this.props.actions || ['閉じる']).map(function (action) {
+            var handler = function () {
+                this.props.onAction(action);
+            }.bind(this);
+            return (React.createElement("button", {onClick: handler}, action));
+        }.bind(this));
+
+        var className = 'dialog';
+        if (!this.props.visible) {
+            className += ' hidden';
+        }
+
+        return (
+                React.createElement("div", {className: className}, 
+                    React.createElement("div", {className: "screen"}), 
+                    React.createElement("div", {className: "container"}, 
+                        React.createElement("header", null, React.createElement("h1", null, this.props.title)), 
+                        this.props.children, 
+                        React.createElement("footer", null, actions)
+                    )
+                )
+               );
+    }
+});
+
+module.exports = Dialog;
+
+
+
+
+},{}],2:[function(require,module,exports){
+'use strict';
+
 var _counter = 0;
 
 var getId = function (prefix) {
@@ -71,7 +106,7 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 var InputContainer = require('./InputContainer');
@@ -123,7 +158,7 @@ module.exports = React.createClass({displayName: "exports",
 
 
 
-},{"./InputContainer":1}],3:[function(require,module,exports){
+},{"./InputContainer":2}],4:[function(require,module,exports){
 'use strict';
 
 var _get = function (o, key) {
@@ -177,7 +212,7 @@ var hash = {
 module.exports = hash;
 
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 var Ability = React.createClass({displayName: "Ability",
@@ -300,7 +335,7 @@ var Ability = React.createClass({displayName: "Ability",
 module.exports = Ability;
 
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var hash = require('../hash');
@@ -308,8 +343,16 @@ var Ability = require('./Ability');
 var Skill = require('./Skill');
 var InputContainer = require('../InputContainer');
 var InputTable = require('../InputTable');
+var Dialog = require('../Dialog');
 
 module.exports = React.createClass({displayName: "exports",
+    getInitialState: function () {
+        return {
+            dialog: {
+                ability: false
+            }
+        };
+    },
     render: function () {
         var inputContainer = function (key, label, options) {
             options = options || {};
@@ -418,7 +461,12 @@ module.exports = React.createClass({displayName: "exports",
                 ), 
                 React.createElement("div", {className: "row"}, 
                     React.createElement("div", {className: "panel ability"}, 
-                        React.createElement(Ability, {data: this.props.data})
+                        React.createElement(Ability, {data: this.props.data}), 
+                        React.createElement("button", {onClick: function () {
+                            this.setState({
+                                dialog: {ability: true}
+                            });
+                        }.bind(this)}, "✎")
                     ), 
                     React.createElement("div", {className: "panel basic"}, 
                         React.createElement("div", {className: "row"}, 
@@ -581,14 +629,63 @@ module.exports = React.createClass({displayName: "exports",
                         ])
                     )
                 ), 
-                appendix
+                appendix, 
+                React.createElement(Dialog, {visible: this.state.dialog.ability, title: "能力値", onAction: function () {
+                    this.setState({
+                        dialog: {ability: false}
+                    });
+                }.bind(this)}, 
+                    React.createElement("table", null, 
+                        React.createElement("thead", null, 
+                            React.createElement("tr", null, 
+                                React.createElement("th", null), 
+                                React.createElement("th", null), 
+                                React.createElement("th", {colSpan: "2"}, "基本値"), 
+                                React.createElement("th", null, "成長"), 
+                                React.createElement("th", null, "補正"), 
+                                React.createElement("th", null, "能力値"), 
+                                React.createElement("th", null, "ボーナス")
+                            )
+                        ), 
+                        React.createElement("tbody", null, 
+                            
+                                (function () {
+                                    var row = [];
+                                    for (var i = 0; i < 6; ++i) {
+                                        var cols = [];
+
+                                        if (i % 2 == 0) {
+                                            cols.push(React.createElement("td", {rowSpan: "2"}, '技体心'.charAt(i / 2)));
+                                        }
+                                        cols.push(React.createElement("td", null, ['器用度', '敏捷度', '筋力', '生命力', '知力', '精神力'][i]));
+
+                                        if (i % 2 == 0) {
+                                            cols.push(React.createElement("td", {rowSpan: "2"}, this.props.data[['skill', 'body', 'mind'][i / 2]]));
+                                        }
+                                        
+                                        if (this.props.data.abilities) {
+                                            cols.push(React.createElement("td", null, inputContainer('abilities.' + i, null, {type: 'number'})));
+                                            cols.push(React.createElement("td", null, inputContainer('growths.' + i, null, {type: 'number'})));
+                                            cols.push(React.createElement("td", null, inputContainer('corrects.' + i, null, {type: 'number', readOnly: true})));
+                                            cols.push(React.createElement("td", null, inputContainer('sums.' + i, null, {type: 'number', readOnly: true})));
+                                            cols.push(React.createElement("td", null, inputContainer('bonuses.' + i, null, {type: 'number', readOnly: true})));
+                                        }
+
+                                        row.push(React.createElement("tr", null, cols));
+                                    }
+                                    return row;
+                                }.bind(this))()
+                            
+                        )
+                    )
+                )
             )
         );
     }
 });
 
 
-},{"../InputContainer":1,"../InputTable":2,"../hash":3,"./Ability":4,"./Skill":7}],6:[function(require,module,exports){
+},{"../Dialog":1,"../InputContainer":2,"../InputTable":3,"../hash":4,"./Ability":5,"./Skill":8}],7:[function(require,module,exports){
 'use strict';
 
 var axios = require('axios');
@@ -701,7 +798,7 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 
-},{"../hash":3,"./Character":5,"./Skill":7,"axios":8}],7:[function(require,module,exports){
+},{"../hash":4,"./Character":6,"./Skill":8,"axios":9}],8:[function(require,module,exports){
 'use strict';
 
 var Skill = {
@@ -828,9 +925,9 @@ var Skill = {
 module.exports = Skill;
 
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":10}],9:[function(require,module,exports){
+},{"./lib/axios":11}],10:[function(require,module,exports){
 'use strict';
 
 /*global ActiveXObject:true*/
@@ -938,7 +1035,7 @@ module.exports = function xhrAdapter(resolve, reject, config) {
   request.send(data);
 };
 
-},{"./../defaults":13,"./../helpers/buildUrl":14,"./../helpers/cookies":15,"./../helpers/parseHeaders":17,"./../helpers/transformData":19,"./../helpers/urlIsSameOrigin":20,"./../utils":21}],10:[function(require,module,exports){
+},{"./../defaults":14,"./../helpers/buildUrl":15,"./../helpers/cookies":16,"./../helpers/parseHeaders":18,"./../helpers/transformData":20,"./../helpers/urlIsSameOrigin":21,"./../utils":22}],11:[function(require,module,exports){
 'use strict';
 
 var defaults = require('./defaults');
@@ -1051,7 +1148,7 @@ axios.interceptors = {
   createShortMethodsWithData('post', 'put', 'patch');
 })();
 
-},{"./core/InterceptorManager":11,"./core/dispatchRequest":12,"./defaults":13,"./helpers/deprecatedMethod":16,"./helpers/spread":18,"./utils":21,"es6-promise":22}],11:[function(require,module,exports){
+},{"./core/InterceptorManager":12,"./core/dispatchRequest":13,"./defaults":14,"./helpers/deprecatedMethod":17,"./helpers/spread":19,"./utils":22,"es6-promise":23}],12:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1105,7 +1202,7 @@ InterceptorManager.prototype.forEach = function (fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":21}],12:[function(require,module,exports){
+},{"./../utils":22}],13:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -1136,7 +1233,7 @@ module.exports = function dispatchRequest(config) {
 
 }).call(this,require('_process'))
 
-},{"../adapters/http":9,"../adapters/xhr":9,"_process":23}],13:[function(require,module,exports){
+},{"../adapters/http":10,"../adapters/xhr":10,"_process":24}],14:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -1190,7 +1287,7 @@ module.exports = {
   xsrfHeaderName: 'X-XSRF-TOKEN'
 };
 
-},{"./utils":21}],14:[function(require,module,exports){
+},{"./utils":22}],15:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1244,7 +1341,7 @@ module.exports = function buildUrl(url, params) {
   return url;
 };
 
-},{"./../utils":21}],15:[function(require,module,exports){
+},{"./../utils":22}],16:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1283,7 +1380,7 @@ module.exports = {
   }
 };
 
-},{"./../utils":21}],16:[function(require,module,exports){
+},{"./../utils":22}],17:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1307,7 +1404,7 @@ module.exports = function deprecatedMethod(method, instead, docs) {
   } catch (e) {}
 };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1343,7 +1440,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":21}],18:[function(require,module,exports){
+},{"./../utils":22}],19:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1372,7 +1469,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1393,7 +1490,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":21}],20:[function(require,module,exports){
+},{"./../utils":22}],21:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1447,7 +1544,7 @@ module.exports = function urlIsSameOrigin(requestUrl) {
         parsed.host === originUrl.host);
 };
 
-},{"./../utils":21}],21:[function(require,module,exports){
+},{"./../utils":22}],22:[function(require,module,exports){
 'use strict';
 
 /*global toString:true*/
@@ -1666,7 +1763,7 @@ module.exports = {
   trim: trim
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -2628,7 +2725,7 @@ module.exports = {
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"_process":23}],23:[function(require,module,exports){
+},{"_process":24}],24:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -2720,7 +2817,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 var SW2CharacterSheet = require('./sw2/CharacterSheet');
@@ -2731,7 +2828,7 @@ React.render(
 );
 
 
-},{"./sw2/CharacterSheet":6}]},{},[24])
+},{"./sw2/CharacterSheet":7}]},{},[25])
 
 
 //# sourceMappingURL=index.js.map

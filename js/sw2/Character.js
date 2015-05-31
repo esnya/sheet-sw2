@@ -5,8 +5,16 @@ var Ability = require('./Ability');
 var Skill = require('./Skill');
 var InputContainer = require('../InputContainer');
 var InputTable = require('../InputTable');
+var Dialog = require('../Dialog');
 
 module.exports = React.createClass({displayName: "exports",
+    getInitialState: function () {
+        return {
+            dialog: {
+                ability: false
+            }
+        };
+    },
     render: function () {
         var inputContainer = function (key, label, options) {
             options = options || {};
@@ -115,7 +123,12 @@ module.exports = React.createClass({displayName: "exports",
                 ), 
                 React.createElement("div", {className: "row"}, 
                     React.createElement("div", {className: "panel ability"}, 
-                        React.createElement(Ability, {data: this.props.data})
+                        React.createElement(Ability, {data: this.props.data}), 
+                        React.createElement("button", {onClick: function () {
+                            this.setState({
+                                dialog: {ability: true}
+                            });
+                        }.bind(this)}, "✎")
                     ), 
                     React.createElement("div", {className: "panel basic"}, 
                         React.createElement("div", {className: "row"}, 
@@ -278,7 +291,56 @@ module.exports = React.createClass({displayName: "exports",
                         ])
                     )
                 ), 
-                appendix
+                appendix, 
+                React.createElement(Dialog, {visible: this.state.dialog.ability, title: "能力値", onAction: function () {
+                    this.setState({
+                        dialog: {ability: false}
+                    });
+                }.bind(this)}, 
+                    React.createElement("table", null, 
+                        React.createElement("thead", null, 
+                            React.createElement("tr", null, 
+                                React.createElement("th", null), 
+                                React.createElement("th", null), 
+                                React.createElement("th", {colSpan: "2"}, "基本値"), 
+                                React.createElement("th", null, "成長"), 
+                                React.createElement("th", null, "補正"), 
+                                React.createElement("th", null, "能力値"), 
+                                React.createElement("th", null, "ボーナス")
+                            )
+                        ), 
+                        React.createElement("tbody", null, 
+                            
+                                (function () {
+                                    var row = [];
+                                    for (var i = 0; i < 6; ++i) {
+                                        var cols = [];
+
+                                        if (i % 2 == 0) {
+                                            cols.push(React.createElement("td", {rowSpan: "2"}, '技体心'.charAt(i / 2)));
+                                        }
+                                        cols.push(React.createElement("td", null, ['器用度', '敏捷度', '筋力', '生命力', '知力', '精神力'][i]));
+
+                                        if (i % 2 == 0) {
+                                            cols.push(React.createElement("td", {rowSpan: "2"}, this.props.data[['skill', 'body', 'mind'][i / 2]]));
+                                        }
+                                        
+                                        if (this.props.data.abilities) {
+                                            cols.push(React.createElement("td", null, inputContainer('abilities.' + i, null, {type: 'number'})));
+                                            cols.push(React.createElement("td", null, inputContainer('growths.' + i, null, {type: 'number'})));
+                                            cols.push(React.createElement("td", null, inputContainer('corrects.' + i, null, {type: 'number', readOnly: true})));
+                                            cols.push(React.createElement("td", null, inputContainer('sums.' + i, null, {type: 'number', readOnly: true})));
+                                            cols.push(React.createElement("td", null, inputContainer('bonuses.' + i, null, {type: 'number', readOnly: true})));
+                                        }
+
+                                        row.push(React.createElement("tr", null, cols));
+                                    }
+                                    return row;
+                                }.bind(this))()
+                            
+                        )
+                    )
+                )
             )
         );
     }

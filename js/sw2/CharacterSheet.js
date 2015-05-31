@@ -17,8 +17,16 @@ module.exports = React.createClass({displayName: "exports",
         }.bind(this));
     },
     handleChange: function (key, newValue) {
-        console.log(key + ': ' + hash.get(this.state.data, key) + ' -> ' + newValue);
+        //console.log(key + ': ' + hash.get(this.state.data, key) + ' -> ' + newValue);
         hash.set(this.state.data, key, newValue);
+        this.forceUpdate();
+    },
+    handleAppend: function (key) {
+        hash.get(this.state.data, key).push({});
+        this.forceUpdate();
+    },
+    handleRemove: function (key) {
+        hash.remove(this.state.data, key);
         this.forceUpdate();
     },
     calculate: function () {
@@ -95,7 +103,7 @@ module.exports = React.createClass({displayName: "exports",
                     React.createElement("h1", null, React.createElement("a", {href: "#"}, this.state.data.user_id), " / ", React.createElement("a", {href: "#"}, this.state.data.name))
                     
                 ), 
-                React.createElement(Character, {data: this.state.data, onChange: this.handleChange})
+                React.createElement(Character, {data: this.state.data, onChange: this.handleChange, onAppend: this.handleAppend, onRemove: this.handleRemove})
             )
         );
     }

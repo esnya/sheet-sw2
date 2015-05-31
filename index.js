@@ -78,28 +78,39 @@ var InputContainer = require('./InputContainer');
 
 module.exports = React.createClass({displayName: "exports",
     render: function () {
+        var headline = this.props.keys.map(function (key) {
+            return (
+                    React.createElement("th", null, key.label)
+                   )
+        });
+        if (!this.props.readOnly) {
+            headline.push(React.createElement("th", null, React.createElement("button", {onClick: this.props.onAppend}, "+")));
+        }
         return (
             React.createElement("table", null, 
                 React.createElement("thead", null, 
-                    React.createElement("tr", null, this.props.keys.map(function (key) {
-                        return (
-                            React.createElement("th", null, key.label)
-                        )
-                    })), 
+                    React.createElement("tr", null, headline), 
                     this.props.header
                 ), 
                 React.createElement("tbody", null, 
-                    (this.props.data || []).map(function (line, index) {
-                        return (
-                            React.createElement("tr", null, this.props.keys.map(function (key) {
-                                var onChange = function (value) {
-                                    this.props.onChange(index, key.key, value);
-                                }.bind(this);
-                                return (
-                                    React.createElement("td", null, React.createElement(InputContainer, {value: line[key.key], type: key.type, options: key.options, readOnly: key.readOnly, onChange: onChange}))
-                                );
-                            }.bind(this)))
-                        );
+                    (this.props.data || []).map(
+                            function (line, index) {
+                                var cols = this.props.keys.map(function (key) {
+                                    var onChange = function (value) {
+                                        this.props.onChange(index, key.key, value);
+                                    }.bind(this);
+                                    return (
+                                            React.createElement("td", null, React.createElement(InputContainer, {value: line[key.key], type: key.type, options: key.options, readOnly: key.readOnly, onChange: onChange}))
+                                           );
+                                }.bind(this))
+
+                                if (!this.props.readOnly && this.props.onRemove) {
+                                    var handler = function () {
+                                        this.props.onRemove(index);
+                                    }.bind(this);
+                                    cols.push(React.createElement("td", null, React.createElement("button", {onClick: handler}, "×")));
+                                }
+                        return (React.createElement("tr", null, cols));
                     }.bind(this))
                ), 
                React.createElement("tfoot", null, 
@@ -133,6 +144,24 @@ var _set = function (o, key, value) {
     return o;
 };
 
+var _remove = function (o, key, value) {
+    if (key.length <= 1) {
+        if (Array.isArray(o)) {
+            for (var i = (+key[0]); i < o.length; ++i) {
+                o[i] = o[i+1];
+            }
+            o.length = o.length-1;
+        } else {
+            delete o[key[0]];
+        }
+        console.log(o, key[0]);
+    } else {
+        _remove(o[key[0]], key.slice(1), value);
+    }
+
+    return o;
+};
+
 var hash = {
     get: function (o, key) {
         return _get(o, key.split('.'));
@@ -140,6 +169,9 @@ var hash = {
     set: function (o, key, value) {
         return _set(o, key.split('.'), value);
     },
+    remove: function (o, key) {
+        return _remove(o, key.split('.'));
+    }
 };
 
 module.exports = hash;
@@ -298,8 +330,16 @@ module.exports = React.createClass({displayName: "exports",
                 this.props.onChange([key, index, subkey].join('.'), value);
             }.bind(this);
 
+            var onAppend = function () {
+                this.props.onAppend(key);
+            }.bind(this);
+
+            var onRemove = function (index) {
+                this.props.onRemove([key, index].join('.'));
+            }.bind(this);
+
             return (
-                React.createElement(InputTable, {keys: subkeys, data: hash.get(this.props.data, key), onChange: onChange, footer: options.footer})
+                React.createElement(InputTable, {keys: subkeys, data: hash.get(this.props.data, key), footer: options.footer, onChange: onChange, onAppend: onAppend, onRemove: onRemove})
             );
         }.bind(this);
 
@@ -568,8 +608,16 @@ module.exports = React.createClass({displayName: "exports",
         }.bind(this));
     },
     handleChange: function (key, newValue) {
-        console.log(key + ': ' + hash.get(this.state.data, key) + ' -> ' + newValue);
+        //console.log(key + ': ' + hash.get(this.state.data, key) + ' -> ' + newValue);
         hash.set(this.state.data, key, newValue);
+        this.forceUpdate();
+    },
+    handleAppend: function (key) {
+        hash.get(this.state.data, key).push({});
+        this.forceUpdate();
+    },
+    handleRemove: function (key) {
+        hash.remove(this.state.data, key);
         this.forceUpdate();
     },
     calculate: function () {
@@ -646,7 +694,7 @@ module.exports = React.createClass({displayName: "exports",
                     React.createElement("h1", null, React.createElement("a", {href: "#"}, this.state.data.user_id), " / ", React.createElement("a", {href: "#"}, this.state.data.name))
                     
                 ), 
-                React.createElement(Character, {data: this.state.data, onChange: this.handleChange})
+                React.createElement(Character, {data: this.state.data, onChange: this.handleChange, onAppend: this.handleAppend, onRemove: this.handleRemove})
             )
         );
     }
@@ -758,6 +806,7 @@ var Skill = {
             'コンジャラー',
             'プリースト',
             'フェアリーテイマー',
+            'マギテック',
             'デーモンルーラー'
         ];
 

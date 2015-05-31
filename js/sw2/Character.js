@@ -27,8 +27,16 @@ module.exports = React.createClass({displayName: "exports",
                 this.props.onChange([key, index, subkey].join('.'), value);
             }.bind(this);
 
+            var onAppend = function () {
+                this.props.onAppend(key);
+            }.bind(this);
+
+            var onRemove = function (index) {
+                this.props.onRemove([key, index].join('.'));
+            }.bind(this);
+
             return (
-                React.createElement(InputTable, {keys: subkeys, data: hash.get(this.props.data, key), onChange: onChange, footer: options.footer})
+                React.createElement(InputTable, {keys: subkeys, data: hash.get(this.props.data, key), footer: options.footer, onChange: onChange, onAppend: onAppend, onRemove: onRemove})
             );
         }.bind(this);
 

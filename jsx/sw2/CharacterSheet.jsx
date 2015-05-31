@@ -17,8 +17,16 @@ module.exports = React.createClass({
         }.bind(this));
     },
     handleChange: function (key, newValue) {
-        console.log(key + ': ' + hash.get(this.state.data, key) + ' -> ' + newValue);
+        //console.log(key + ': ' + hash.get(this.state.data, key) + ' -> ' + newValue);
         hash.set(this.state.data, key, newValue);
+        this.forceUpdate();
+    },
+    handleAppend: function (key) {
+        hash.get(this.state.data, key).push({});
+        this.forceUpdate();
+    },
+    handleRemove: function (key) {
+        hash.remove(this.state.data, key);
         this.forceUpdate();
     },
     calculate: function () {
@@ -95,7 +103,7 @@ module.exports = React.createClass({
                     <h1><a href="#">{this.state.data.user_id}</a> / <a href="#">{this.state.data.name}</a></h1>
                     
                 </header>
-                <Character data={this.state.data} onChange={this.handleChange}/>
+                <Character data={this.state.data} onChange={this.handleChange} onAppend={this.handleAppend} onRemove={this.handleRemove}/>
             </div>
         );
     }

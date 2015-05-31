@@ -1,5 +1,6 @@
 'use strict';
 
+var Ability = require('./Ability');
 var InputContainer = require('../InputContainer');
 var InputTable = require('../InputTable');
 
@@ -103,23 +104,30 @@ module.exports = React.createClass({displayName: "exports",
                     "Icon/Image"
                 ), 
                 React.createElement("div", {className: "row"}, 
-                    React.createElement("div", {className: "panel basic"}, 
-                        React.createElement("div", {className: "flex column"}, 
-                            inputContainer('name', '名前', {className: 'fill'}), 
-                            inputContainer('race', '種族', {className: 'fill'}), 
-                            inputContainer('sex', '性別', {className: 'fill'}), 
-                            inputContainer('age', '年齢', {className: 'fill'})
-                        ), 
-                        React.createElement("div", {className: "flex column"}, 
-                            inputContainer('fumbles', '1ゾロ', {type: 'number', className: 'fill'}), 
-                            inputContainer('experience', '経験点', {type: 'number', className: 'fill'}), 
-                            inputContainer('used_experience', '使用経験点', {readOnly: true, className: 'fill'}), 
-                            inputContainer('nationality', '生まれ', {className: 'fill'}), 
-                            inputContainer('growth_count', '成長回数', {readOnly: true, className: 'fill'})
-                        )
+                    React.createElement("div", {className: "panel ability"}, 
+                        React.createElement(Ability, {data: this.props.data})
                     ), 
-                    React.createElement("div", {className: "panel attribute"}, 
-                        "Abilities"
+                    React.createElement("div", {className: "panel basic"}, 
+                        React.createElement("div", {className: "row"}, 
+                            inputContainer('name', '名前'), 
+                            inputContainer('race', '種族')
+                        ), 
+                        React.createElement("div", {className: "row"}, 
+                            inputContainer('sex', '性別'), 
+                            inputContainer('age', '年齢')
+                        ), 
+                        React.createElement("div", {className: "row"}, 
+                            inputContainer('experience', '経験点', {type: 'number'}), 
+                            inputContainer('used_experience', '使用経験点', {readOnly: true})
+                        ), 
+                        React.createElement("div", {className: "row"}, 
+                            inputContainer('fumbles', '1ゾロ', {type: 'number'}), 
+                            inputContainer('growth_count', '成長回数', {readOnly: true})
+                        ), 
+                        React.createElement("div", {className: "row"}, 
+                            inputContainer('campaign', 'キャンペーン'), 
+                            inputContainer('nationality', '生まれ')
+                        )
                     )
                 ), 
                 React.createElement("div", {className: "panel skill"}, 

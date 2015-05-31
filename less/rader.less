@@ -1,0 +1,44 @@
+svg.rader {
+    .grid {
+        stroke-width: 1;
+        stroke: rgba(0, 0, 0, 0.125);
+        fill: none;
+    }
+
+    .label {
+        stroke: none;
+        fill: gray;
+        text-anchor: middle;
+        font-size: 15px;
+
+        .l {
+            font-size: 30px;
+            dominant-baseline: middle;
+        }
+    }
+
+    .rader {
+        stroke-width: 2;
+        
+        polygon {
+            stroke: gray;
+            fill: lightgray;
+            &:nth-last-child(1) {
+                stroke: #ff0000;
+                fill: #ff5555;
+            }
+            &:nth-last-child(2) {
+                stroke: #00ff00;
+                fill: #55ff55;
+            }
+            &:nth-last-child(3) {
+                stroke: #0000ff;
+                fill: #5555ff;
+            }
+            &:nth-last-child(4) {
+                stroke: #00ffff;
+                fill: #55ffff;
+            }
+        }
+    }
+}

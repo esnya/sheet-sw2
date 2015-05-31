@@ -1,13 +1,35 @@
 @import (reference) 'flex.less';
 
 .sw2-character {
-    .row {
+    &> .row {
+        .layout(column);
+        align-items: stretch;
+
         @media screen and (min-width: 920px) {
             .layout(row);
+
             &> .panel {
+                .flex();
+
+                &.ability {
+                    flex: 0 0 333px;
+                }
+            }
+        }
+    }
+
+    .panel {
+        .row {
+            .layout(row);
+
+            &> * {
                 .flex();
             }
         }
+    }
+
+    .ability {
+        text-align: center;
     }
 
     .money {

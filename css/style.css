@@ -372,14 +372,32 @@ th {
   max-width: 960px;
 }
 
+.sw2-character > .row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
 @media screen and (min-width: 920px) {
-  .sw2-character .row {
+  .sw2-character > .row {
     display: flex;
     flex-direction: row;
   }
-  .sw2-character .row > .panel {
+  .sw2-character > .row > .panel {
     flex: 1 1 0;
   }
+  .sw2-character > .row > .panel.ability {
+    flex: 0 0 333px;
+  }
+}
+.sw2-character .panel .row {
+  display: flex;
+  flex-direction: row;
+}
+.sw2-character .panel .row > * {
+  flex: 1 1 0;
+}
+.sw2-character .ability {
+  text-align: center;
 }
 .sw2-character .money {
   display: flex;
@@ -443,6 +461,45 @@ table .input-container {
 .panel > table {
   width: 100%;
   margin: 0;
+}
+
+svg.rader .grid {
+  stroke-width: 1;
+  stroke: rgba(0, 0, 0, 0.125);
+  fill: none;
+}
+svg.rader .label {
+  stroke: none;
+  fill: gray;
+  text-anchor: middle;
+  font-size: 15px;
+}
+svg.rader .label .l {
+  font-size: 30px;
+  dominant-baseline: middle;
+}
+svg.rader .rader {
+  stroke-width: 2;
+}
+svg.rader .rader polygon {
+  stroke: gray;
+  fill: lightgray;
+}
+svg.rader .rader polygon:nth-last-child(1) {
+  stroke: #ff0000;
+  fill: #ff5555;
+}
+svg.rader .rader polygon:nth-last-child(2) {
+  stroke: #00ff00;
+  fill: #55ff55;
+}
+svg.rader .rader polygon:nth-last-child(3) {
+  stroke: #0000ff;
+  fill: #5555ff;
+}
+svg.rader .rader polygon:nth-last-child(4) {
+  stroke: #00ffff;
+  fill: #55ffff;
 }
 
 table td,

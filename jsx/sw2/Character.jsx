@@ -1,5 +1,6 @@
 'use strict';
 
+var Ability = require('./Ability');
 var InputContainer = require('../InputContainer');
 var InputTable = require('../InputTable');
 
@@ -103,23 +104,30 @@ module.exports = React.createClass({
                     Icon/Image
                 </div>
                 <div className="row">
-                    <div className="panel basic">
-                        <div className="flex column">
-                            {inputContainer('name', '名前', {className: 'fill'})}
-                            {inputContainer('race', '種族', {className: 'fill'})}
-                            {inputContainer('sex', '性別', {className: 'fill'})}
-                            {inputContainer('age', '年齢', {className: 'fill'})}
-                        </div>
-                        <div className="flex column">
-                            {inputContainer('fumbles', '1ゾロ', {type: 'number', className: 'fill'})}
-                            {inputContainer('experience', '経験点', {type: 'number', className: 'fill'})}
-                            {inputContainer('used_experience', '使用経験点', {readOnly: true, className: 'fill'})}
-                            {inputContainer('nationality', '生まれ', {className: 'fill'})}
-                            {inputContainer('growth_count', '成長回数', {readOnly: true, className: 'fill'})}
-                        </div>
+                    <div className="panel ability">
+                        <Ability data={this.props.data}/>
                     </div>
-                    <div className="panel attribute">
-                        Abilities
+                    <div className="panel basic">
+                        <div className="row">
+                            {inputContainer('name', '名前')}
+                            {inputContainer('race', '種族')}
+                        </div>
+                        <div className="row">
+                            {inputContainer('sex', '性別')}
+                            {inputContainer('age', '年齢')}
+                        </div>
+                        <div className="row">
+                            {inputContainer('experience', '経験点', {type: 'number'})}
+                            {inputContainer('used_experience', '使用経験点', {readOnly: true})}
+                        </div>
+                        <div className="row">
+                            {inputContainer('fumbles', '1ゾロ', {type: 'number'})}
+                            {inputContainer('growth_count', '成長回数', {readOnly: true})}
+                        </div>
+                        <div className="row">
+                            {inputContainer('campaign', 'キャンペーン')}
+                            {inputContainer('nationality', '生まれ')}
+                        </div>
                     </div>
                 </div>
                 <div className="panel skill">

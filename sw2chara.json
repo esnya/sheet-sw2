@@ -26,13 +26,24 @@
     ],
     "weapons": [
         {
-            "name": "剣",
+            "name": "剣1",
             "str_req": 10,
             "to_use": "1H両",
             "accuracy": -1,
             "impact": 20,
             "critical": 11,
             "damage": 1,
+            "impacts": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "memo": "でっち上げデータ"
+        },
+        {
+            "name": "剣2",
+            "str_req": 10,
+            "to_use": "1H両",
+            "accuracy_correction": -1,
+            "impact": 20,
+            "critical": 11,
+            "damage_correction": 1,
             "impacts": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             "memo": "でっち上げデータ"
         }

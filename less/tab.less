@@ -1,0 +1,42 @@
+.tab {
+    nav {
+        border-bottom: 1px solid lightgray;
+
+        ul {
+            display: flex;
+            margin: 0;
+            padding: 0;
+
+            li  {
+                list-style: none;
+
+                a {
+                    border-top-left-radius: 8px;
+                    border-top-right-radius: 8px;
+                    display: block;
+                    padding: 8px 18px;
+                    color: black;
+                    transition: all 0.2s ease-in-out;
+                }
+                &:not(.active) a {
+                    background-color: lightgray;
+                }
+                &.action a {
+                    background-color: white;
+                }
+            }
+
+            li.pading {
+                flex: 1 1 0;
+            }
+        }
+    }
+
+    .pages {
+        .page {
+            &:not(.active) {
+                display: none;
+            }
+        }
+    }
+}

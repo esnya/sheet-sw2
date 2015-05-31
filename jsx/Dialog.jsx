@@ -16,7 +16,6 @@ var Dialog = React.createClass({
 
         return (
                 <div className={className}>
-                    <div className="screen"></div>
                     <div className="container">
                         <header><h1>{this.props.title}</h1></header>
                         {this.props.children}

@@ -39,12 +39,12 @@ module.exports = React.createClass({
         data.sums = [];
         data.growth_count = 0;
         for (var i = 0; i < 6; ++i) {
-            data.sums[i] = data[['skill', 'skill', 'body', 'body', 'mind', 'mind'][i]]
-                + (data.abilities || [])[i]
-                + (data.growths || [])[i]
-                + (data.corrects || [])[i];
+            data.sums[i] = (+data[['skill', 'skill', 'body', 'body', 'mind', 'mind'][i]])
+                + (+(data.abilities || [])[i])
+                + (+(data.growths || [])[i])
+                + (+(data.corrects || [])[i]);
             if (data.growths) {
-                data.growth_count += data.growths[i];
+                data.growth_count += (+data.growths[i]);
             }
         }
         data.bonuses = data.sums.map(function (n) {

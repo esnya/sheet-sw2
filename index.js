@@ -9,7 +9,8 @@ var getId = function (prefix) {
 
 module.exports = React.createClass({displayName: "exports",
     handleChange: function (event) {
-        this.props.onChange(event.target.value);
+        var target = event.target;
+        this.props.onChange(target.type == 'checkbox' ? target.checked : target.value);
     },
     render: function () {
         var type = this.props.type || 'text';
@@ -37,7 +38,7 @@ module.exports = React.createClass({displayName: "exports",
                     );
         } else {
             contents.push(
-                    React.createElement("input", {id: id, type: type, value: this.props.value, readOnly: this.props.readOnly, onChange: this.handleChange})
+                    React.createElement("input", {id: id, type: type, value: this.props.value, readOnly: this.props.readOnly, onChange: this.handleChange, checked: type == 'checkbox' && this.props.value})
                     );
         }
 

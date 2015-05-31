@@ -8,7 +8,8 @@ var getId = function (prefix) {
 
 module.exports = React.createClass({
     handleChange: function (event) {
-        this.props.onChange(event.target.value);
+        var target = event.target;
+        this.props.onChange(target.type == 'checkbox' ? target.checked : target.value);
     },
     render: function () {
         var type = this.props.type || 'text';
@@ -36,7 +37,7 @@ module.exports = React.createClass({
                     );
         } else {
             contents.push(
-                    <input id={id} type={type} value={this.props.value} readOnly={this.props.readOnly} onChange={this.handleChange}/>
+                    <input id={id} type={type} value={this.props.value} readOnly={this.props.readOnly} onChange={this.handleChange} checked={type == 'checkbox' && this.props.value}/>
                     );
         }
 

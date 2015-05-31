@@ -1,0 +1,16 @@
+@import (reference) 'flex.less';
+
+.sw2-character {
+    .row {
+        @media screen and (min-width: 920px) {
+            .layout(row);
+            &> .panel {
+                .flex();
+            }
+        }
+    }
+
+    .money {
+        .layout(row);
+    }
+}

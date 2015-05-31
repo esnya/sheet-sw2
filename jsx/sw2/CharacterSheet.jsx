@@ -25,7 +25,7 @@ module.exports = React.createClass({
         return (
             <div className="sw2-character-sheet">
                 <header>
-                    <h1> {this.state.data.name} <span className="user-id">{this.state.data.user_id}</span></h1>
+                    <h1><a href="#">{this.state.data.user_id}</a> / <a href="#">{this.state.data.name}</a></h1>
                     
                 </header>
                 <Character data={this.state.data} onChange={this.handleChange}/>

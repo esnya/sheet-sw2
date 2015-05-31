@@ -25,7 +25,7 @@ module.exports = React.createClass({displayName: "exports",
         return (
             React.createElement("div", {className: "sw2-character-sheet"}, 
                 React.createElement("header", null, 
-                    React.createElement("h1", null, " ", this.state.data.name, " ", React.createElement("span", {className: "user-id"}, this.state.data.user_id))
+                    React.createElement("h1", null, React.createElement("a", {href: "#"}, this.state.data.user_id), " / ", React.createElement("a", {href: "#"}, this.state.data.name))
                     
                 ), 
                 React.createElement(Character, {data: this.state.data, onChange: this.handleChange})

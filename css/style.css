@@ -361,7 +361,29 @@ th {
   box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.125);
 }
 .sw2-character-sheet > header h1 {
-  margin: 8px;
+  margin: 0;
+  text-align: center;
+}
+.sw2-character-sheet > header h1 a {
+  color: white;
+}
+.sw2-character-sheet > .sw2-character {
+  margin: auto;
+  max-width: 960px;
+}
+
+@media screen and (min-width: 920px) {
+  .sw2-character .row {
+    display: flex;
+    flex-direction: row;
+  }
+  .sw2-character .row > .panel {
+    flex: 1 1 0;
+  }
+}
+.sw2-character .money {
+  display: flex;
+  flex-direction: row;
 }
 
 .flex {
@@ -377,6 +399,7 @@ th {
   flex: 1 1 auto;
 }
 
+
 .input-container {
   margin: 24px 4px 0;
   position: relative;
@@ -384,6 +407,8 @@ th {
 .input-container input {
   width: 100%;
   border: none;
+}
+.input-container input:not([readonly]) {
   border-bottom: 1px solid lightgray;
 }
 .input-container input:focus {
@@ -399,10 +424,11 @@ th {
   z-index: 10000;
   font-size: small;
   transition: all 0.2s ease-in-out;
-  transform: translateY(-24px);
 }
-.input-container.empty input:not(:focus) + label {
-  transform: none;
+.input-container:not(.empty) input:not(:focus) + label,
+.input-container input:focus + label,
+.input-container input[readonly] + label {
+  transform: translateY(-24px);
 }
 table .input-container {
   margin-top: 0;
@@ -422,6 +448,9 @@ table .input-container {
 table td,
 table th {
   padding: 8px 12px;
+}
+table thead th {
+  text-decoration: underline;
 }
 
 /*# sourceMappingURL=style.css.map */

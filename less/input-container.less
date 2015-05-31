@@ -5,7 +5,10 @@
     input {
         width: 100%;
         border: none;
-        border-bottom: 1px solid lightgray;
+
+        &:not([readonly]) {
+            border-bottom: 1px solid lightgray;
+        }
 
         &:focus {
             border-bottom-color: gray;
@@ -16,7 +19,6 @@
         }
     }
 
-
     label {
         position: absolute;
         left: 0;
@@ -24,12 +26,12 @@
         z-index: 10000;
         font-size: small;
         transition: all 0.2s ease-in-out;
-        transform: translateY(-24px);
     }
 
-
-    &.empty input:not(:focus) + label {
-        transform: none;
+    &:not(.empty) input:not(:focus) + label,
+    input:focus + label,
+    input[readonly] + label {
+        transform: translateY(-24px);
     }
 }
 

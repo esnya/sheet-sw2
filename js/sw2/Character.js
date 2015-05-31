@@ -206,7 +206,7 @@ module.exports = React.createClass({displayName: "exports",
                         inputContainer('notes', '経歴、その他')
                     ), 
                     React.createElement("div", {className: "panel money"}, 
-                        inputContainer('money.on_hands', '所持金', {type: 'number'}), 
+                        inputContainer('money.on_hand', '所持金', {type: 'number'}), 
                         inputContainer('money.deposit', '貯金', {type: 'number'}), 
                         inputContainer('money.debt', '借金', {type: 'number'})
                     )
@@ -269,7 +269,7 @@ module.exports = React.createClass({displayName: "exports",
                             ), (
                                 React.createElement("tr", null, 
                                     React.createElement("th", null, "合計名誉点"), 
-                                    React.createElement("td", null, inputContainer('total_honor', null, {readOnly: true}))
+                                    React.createElement("td", null, inputContainer('total_honor', null, {type: 'number', readOnly: true}))
                                 )
                             )]
                         })
@@ -319,7 +319,7 @@ module.exports = React.createClass({displayName: "exports",
                                         if (i % 2 == 0) {
                                             cols.push(React.createElement("td", {rowSpan: "2"}, '技体心'.charAt(i / 2)));
                                         }
-                                        cols.push(React.createElement("td", null, ['器用度', '敏捷度', '筋力', '生命力', '知力', '精神力'][i]));
+                                        cols.push(React.createElement("td", null, ['器', '敏', '筋', '生', '知', '精'][i]));
 
                                         if (i % 2 == 0) {
                                             cols.push(React.createElement("td", {rowSpan: "2"}, this.props.data[['skill', 'body', 'mind'][i / 2]]));

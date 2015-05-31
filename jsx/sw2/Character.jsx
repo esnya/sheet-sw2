@@ -206,7 +206,7 @@ module.exports = React.createClass({
                         {inputContainer('notes', '経歴、その他')}
                     </div>
                     <div className="panel money">
-                        {inputContainer('money.on_hands', '所持金', {type: 'number'})}
+                        {inputContainer('money.on_hand', '所持金', {type: 'number'})}
                         {inputContainer('money.deposit', '貯金', {type: 'number'})}
                         {inputContainer('money.debt', '借金', {type: 'number'})}
                     </div>
@@ -269,7 +269,7 @@ module.exports = React.createClass({
                             ), (
                                 <tr>
                                     <th>合計名誉点</th>
-                                    <td>{inputContainer('total_honor', null, {readOnly: true})}</td>
+                                    <td>{inputContainer('total_honor', null, {type: 'number', readOnly: true})}</td>
                                 </tr>
                             )]
                         })}
@@ -319,7 +319,7 @@ module.exports = React.createClass({
                                         if (i % 2 == 0) {
                                             cols.push(<td rowSpan="2">{'技体心'.charAt(i / 2)}</td>);
                                         }
-                                        cols.push(<td>{['器用度', '敏捷度', '筋力', '生命力', '知力', '精神力'][i]}</td>);
+                                        cols.push(<td>{['器', '敏', '筋', '生', '知', '精'][i]}</td>);
 
                                         if (i % 2 == 0) {
                                             cols.push(<td rowSpan="2">{this.props.data[['skill', 'body', 'mind'][i / 2]]}</td>);

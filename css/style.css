@@ -556,8 +556,14 @@ table td,
 table th {
   padding: 8px 12px;
 }
+table tr:not(:last-child) {
+  border-bottom: 1px solid #efefef;
+}
 table thead th {
   text-decoration: underline;
+}
+table thead tr {
+  border-bottom: 1px solid #efefef;
 }
 
 /*# sourceMappingURL=style.css.map */

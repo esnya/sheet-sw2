@@ -1,5 +1,6 @@
 'use strict';
 
+var hash = require('../hash');
 var Ability = require('./Ability');
 var InputContainer = require('../InputContainer');
 var InputTable = require('../InputTable');
@@ -14,7 +15,7 @@ module.exports = React.createClass({
             }.bind(this); 
 
             return (
-                <InputContainer label={label} type={options.type} value={this.props.data[key]} className={options.className} readOnly={options.readOnly} onChange={onChange}/>
+                <InputContainer label={label} type={options.type} value={hash.get(this.props.data, key)} className={options.className} readOnly={options.readOnly} onChange={onChange}/>
             );
         }.bind(this);
 
@@ -26,7 +27,7 @@ module.exports = React.createClass({
             }.bind(this);
 
             return (
-                <InputTable keys={subkeys} data={this.props.data[key]} onChange={onChange} footer={options.footer}/>
+                <InputTable keys={subkeys} data={hash.get(this.props.data, key)} onChange={onChange} footer={options.footer}/>
             );
         }.bind(this);
 
@@ -118,15 +119,18 @@ module.exports = React.createClass({
                         </div>
                         <div className="row">
                             {inputContainer('experience', '経験点', {type: 'number'})}
-                            {inputContainer('used_experience', '使用経験点', {readOnly: true})}
+                            {inputContainer('total_experience', '使用経験点', {readOnly: true, type: 'number'})}
                         </div>
                         <div className="row">
                             {inputContainer('fumbles', '1ゾロ', {type: 'number'})}
-                            {inputContainer('growth_count', '成長回数', {readOnly: true})}
+                            {inputContainer('growth_count', '成長回数', {readOnly: true, type: 'number'})}
                         </div>
                         <div className="row">
                             {inputContainer('campaign', 'キャンペーン')}
                             {inputContainer('nationality', '生まれ')}
+                        </div>
+                        <div className="row">
+                            {inputContainer('level', '冒険者レベル')}
                         </div>
                     </div>
                 </div>
@@ -134,9 +138,9 @@ module.exports = React.createClass({
                     {inputTable('skills', [
                         {key: 'name', label: '技能'},
                         {key: 'level', label: 'レベル', type: 'number'},
-                        {key: 'magic_power', label: '魔力', readOnly: true},
-                        {key: 'next', label: '次', readOnly: true},
-                        {key: 'total', label: '累計', readOnly: true}
+                        {key: 'magic_power', label: '魔力', type: 'number', readOnly: true},
+                        {key: 'next', label: '次', type: 'number', readOnly: true},
+                        {key: 'total', label: '累計', type: 'number', readOnly: true}
                     ])}
                 </div>
                 <div className="panel weapon">
@@ -145,21 +149,25 @@ module.exports = React.createClass({
                 <div className="row">
                     <div className="panel armor">
                         {inputContainer('armor.name', '鎧')}
-                        {inputContainer('armor.str_req', '必筋')}
-                        {inputContainer('armor.protection', '防護点')}
-                        {inputContainer('armor.evasion', '回避')}
+                        {inputContainer('armor.str_req', '必筋', {type: 'number'})}
+                        {inputContainer('armor.protection', '防護点', {type: 'number'})}
+                        {inputContainer('armor.evasion', '回避', {type: 'number'})}
                         {inputContainer('armor.memo', 'メモ')}
                     </div>
                     <div className="panel shiled">
                         {inputContainer('shield.name', '盾')}
-                        {inputContainer('shield.str_req', '必筋')}
-                        {inputContainer('shield.protection', '防護点')}
-                        {inputContainer('shield.evasion', '回避')}
+                        {inputContainer('shield.str_req', '必筋', {type: 'number'})}
+                        {inputContainer('shield.protection', '防護点', {type: 'number'})}
+                        {inputContainer('shield.evasion', '回避', {type: 'number'})}
                         {inputContainer('shield.memo', 'メモ')}
                     </div>
                 </div>
                 <div className="panel evasion">
                     {inputContainer('evasion_skill', '回避技能')}
+                    <div className="row">
+                    {inputContainer('protection', '防護点', {type: 'number', readOnly: true})}
+                    {inputContainer('evasion', '回避力', {type: 'number', readOnly: true})}
+                    </div>
                 </div>
                 <div className="row">
                     <div className="panel note">

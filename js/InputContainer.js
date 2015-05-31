@@ -11,8 +11,12 @@ module.exports = React.createClass({displayName: "exports",
         this.props.onChange(event.target.value);
     },
     render: function () {
-        var type = this.props.type || "text";
+        var type = this.props.type || 'text';
         var id = getId(type);
+
+        if (this.props.readOnly && type == 'number') {
+            type = 'text';
+        }
 
         var contents = [];
         contents.push(
@@ -33,6 +37,10 @@ module.exports = React.createClass({displayName: "exports",
 
         if (this.props.className) {
             className += ' ' + this.props.className;
+        }
+
+        if (this.props.readOnly && this.props.type == 'number') {
+            className += ' right';
         }
 
         return (

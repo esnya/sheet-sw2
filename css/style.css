@@ -435,6 +435,9 @@ th {
 .input-container input[type=number] {
   text-align: right;
 }
+.input-container.right input {
+  text-align: right;
+}
 .input-container label {
   position: absolute;
   left: 0;

@@ -12,8 +12,12 @@ module.exports = React.createClass({displayName: "exports",
         this.props.onChange(event.target.value);
     },
     render: function () {
-        var type = this.props.type || "text";
+        var type = this.props.type || 'text';
         var id = getId(type);
+
+        if (this.props.readOnly && type == 'number') {
+            type = 'text';
+        }
 
         var contents = [];
         contents.push(
@@ -34,6 +38,10 @@ module.exports = React.createClass({displayName: "exports",
 
         if (this.props.className) {
             className += ' ' + this.props.className;
+        }
+
+        if (this.props.readOnly && this.props.type == 'number') {
+            className += ' right';
         }
 
         return (
@@ -87,6 +95,39 @@ module.exports = React.createClass({displayName: "exports",
 
 
 },{"./InputContainer":1}],3:[function(require,module,exports){
+'use strict';
+
+var _get = function (o, key) {
+    if (key.length == 0 || o == null) {
+        return o;
+    }
+
+    return _get(o[key[0]], key.slice(1));
+};
+
+var _set = function (o, key, value) {
+    if (key.length <= 1) {
+        o[key[0]] = value;
+    } else {
+        _set(o[key[0]], key.slice(1), value);
+    }
+
+    return o;
+};
+
+var hash = {
+    get: function (o, key) {
+        return _get(o, key.split('.'));
+    },
+    set: function (o, key, value) {
+        return _set(o, key.split('.'), value);
+    },
+};
+
+module.exports = hash;
+
+
+},{}],4:[function(require,module,exports){
 'use strict';
 
 var Ability = React.createClass({displayName: "Ability",
@@ -209,9 +250,10 @@ var Ability = React.createClass({displayName: "Ability",
 module.exports = Ability;
 
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
+var hash = require('../hash');
 var Ability = require('./Ability');
 var InputContainer = require('../InputContainer');
 var InputTable = require('../InputTable');
@@ -226,7 +268,7 @@ module.exports = React.createClass({displayName: "exports",
             }.bind(this); 
 
             return (
-                React.createElement(InputContainer, {label: label, type: options.type, value: this.props.data[key], className: options.className, readOnly: options.readOnly, onChange: onChange})
+                React.createElement(InputContainer, {label: label, type: options.type, value: hash.get(this.props.data, key), className: options.className, readOnly: options.readOnly, onChange: onChange})
             );
         }.bind(this);
 
@@ -238,7 +280,7 @@ module.exports = React.createClass({displayName: "exports",
             }.bind(this);
 
             return (
-                React.createElement(InputTable, {keys: subkeys, data: this.props.data[key], onChange: onChange, footer: options.footer})
+                React.createElement(InputTable, {keys: subkeys, data: hash.get(this.props.data, key), onChange: onChange, footer: options.footer})
             );
         }.bind(this);
 
@@ -330,15 +372,18 @@ module.exports = React.createClass({displayName: "exports",
                         ), 
                         React.createElement("div", {className: "row"}, 
                             inputContainer('experience', '経験点', {type: 'number'}), 
-                            inputContainer('used_experience', '使用経験点', {readOnly: true})
+                            inputContainer('total_experience', '使用経験点', {readOnly: true, type: 'number'})
                         ), 
                         React.createElement("div", {className: "row"}, 
                             inputContainer('fumbles', '1ゾロ', {type: 'number'}), 
-                            inputContainer('growth_count', '成長回数', {readOnly: true})
+                            inputContainer('growth_count', '成長回数', {readOnly: true, type: 'number'})
                         ), 
                         React.createElement("div", {className: "row"}, 
                             inputContainer('campaign', 'キャンペーン'), 
                             inputContainer('nationality', '生まれ')
+                        ), 
+                        React.createElement("div", {className: "row"}, 
+                            inputContainer('level', '冒険者レベル')
                         )
                     )
                 ), 
@@ -346,9 +391,9 @@ module.exports = React.createClass({displayName: "exports",
                     inputTable('skills', [
                         {key: 'name', label: '技能'},
                         {key: 'level', label: 'レベル', type: 'number'},
-                        {key: 'magic_power', label: '魔力', readOnly: true},
-                        {key: 'next', label: '次', readOnly: true},
-                        {key: 'total', label: '累計', readOnly: true}
+                        {key: 'magic_power', label: '魔力', type: 'number', readOnly: true},
+                        {key: 'next', label: '次', type: 'number', readOnly: true},
+                        {key: 'total', label: '累計', type: 'number', readOnly: true}
                     ])
                 ), 
                 React.createElement("div", {className: "panel weapon"}, 
@@ -357,21 +402,25 @@ module.exports = React.createClass({displayName: "exports",
                 React.createElement("div", {className: "row"}, 
                     React.createElement("div", {className: "panel armor"}, 
                         inputContainer('armor.name', '鎧'), 
-                        inputContainer('armor.str_req', '必筋'), 
-                        inputContainer('armor.protection', '防護点'), 
-                        inputContainer('armor.evasion', '回避'), 
+                        inputContainer('armor.str_req', '必筋', {type: 'number'}), 
+                        inputContainer('armor.protection', '防護点', {type: 'number'}), 
+                        inputContainer('armor.evasion', '回避', {type: 'number'}), 
                         inputContainer('armor.memo', 'メモ')
                     ), 
                     React.createElement("div", {className: "panel shiled"}, 
                         inputContainer('shield.name', '盾'), 
-                        inputContainer('shield.str_req', '必筋'), 
-                        inputContainer('shield.protection', '防護点'), 
-                        inputContainer('shield.evasion', '回避'), 
+                        inputContainer('shield.str_req', '必筋', {type: 'number'}), 
+                        inputContainer('shield.protection', '防護点', {type: 'number'}), 
+                        inputContainer('shield.evasion', '回避', {type: 'number'}), 
                         inputContainer('shield.memo', 'メモ')
                     )
                 ), 
                 React.createElement("div", {className: "panel evasion"}, 
-                    inputContainer('evasion_skill', '回避技能')
+                    inputContainer('evasion_skill', '回避技能'), 
+                    React.createElement("div", {className: "row"}, 
+                    inputContainer('protection', '防護点', {type: 'number', readOnly: true}), 
+                    inputContainer('evasion', '回避力', {type: 'number', readOnly: true})
+                    )
                 ), 
                 React.createElement("div", {className: "row"}, 
                     React.createElement("div", {className: "panel note"}, 
@@ -470,11 +519,13 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 
-},{"../InputContainer":1,"../InputTable":2,"./Ability":3}],5:[function(require,module,exports){
+},{"../InputContainer":1,"../InputTable":2,"../hash":3,"./Ability":4}],6:[function(require,module,exports){
 'use strict';
 
 var axios = require('axios');
+var hash = require('../hash');
 var Character = require('./Character');
+var Skill = require('./Skill');
 
 module.exports = React.createClass({displayName: "exports",
     getInitialState: function () {
@@ -488,13 +539,78 @@ module.exports = React.createClass({displayName: "exports",
         }.bind(this));
     },
     handleChange: function (key, newValue) {
-        console.log(key + ': ' + this.state.data[key] + ' -> ' + newValue);
-        this.state.data[key] = newValue;
-        this.setState({
-            data: this.state.data
+        console.log(key + ': ' + hash.get(this.state.data, key) + ' -> ' + newValue);
+        hash.set(this.state.data, key, newValue);
+        this.forceUpdate();
+    },
+    calculate: function () {
+        var data = this.state.data;
+
+        // Correct
+        data.corrects = [0, 0, 0, 0, 0, 0];
+
+        // Ability
+        data.sums = [];
+        data.growth_count = 0;
+        for (var i = 0; i < 6; ++i) {
+            data.sums[i] = data[['skill', 'skill', 'body', 'body', 'mind', 'mind'][i]]
+                + (data.abilities || [])[i]
+                + (data.growths || [])[i]
+                + (data.corrects || [])[i];
+            if (data.growths) {
+                data.growth_count += data.growths[i];
+            }
+        }
+        data.bonuses = data.sums.map(function (n) {
+            return Math.floor(n / 6);
         });
+
+        // Level
+        if (data.skills) {
+            data.level = data.skills.map(function (skill) {
+                return skill.level;
+            }).reduce(function (a, b) {
+                return (a > b) ? a : b;
+            });
+        }
+
+        // Skill
+        if (data.skills) {
+            data.skills.forEach(function (skill) {
+                var magic_power = Skill.magicPower(skill.name, +skill.level, data) + (data.magic_power || 0);
+                if (magic_power) {
+                    skill.magic_power = magic_power;
+                }
+
+                skill.next = Skill.next(skill.name, +skill.level);
+                skill.total = Skill.total(skill.name, +skill.level);
+            });
+            data.total_experience = data.skills.map(function (skill) {
+                return +skill.total;
+            }).reduce(function (a, b) {
+                return a + b;
+            });
+        }
+
+        // Protection, Evasion
+        data.protection = 0;
+        data.evasion = 0;
+        if (data.armor) {
+            data.protection += (+data.armor.protection) || 0;
+            data.evasion += (+data.armor.evasion) || 0;
+        }
+        if (data.shield) {
+            data.protection += (+data.shield.protection) || 0;
+            data.evasion += (+data.shield.evasion) || 0;
+        }
+        if (data.skills) {
+            data.evasion += Skill.base(+(data.skills.find(function (skill) {
+                return skill.name == data.evasion_skill;
+            }) || {level: 0}).level, data.bonuses[1]);
+        }
     },
     render: function () {
+        this.calculate();
         return (
             React.createElement("div", {className: "sw2-character-sheet"}, 
                 React.createElement("header", null, 
@@ -508,9 +624,83 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 
-},{"./Character":4,"axios":6}],6:[function(require,module,exports){
+},{"../hash":3,"./Character":5,"./Skill":7,"axios":8}],7:[function(require,module,exports){
+'use strict';
+
+var Skill = {
+    fight: [
+        'ファイター',
+        'グラップラー',
+        'フェンサー',
+        'シューター'
+    ],
+    magic: [
+        'ソーサラー',
+        'コンジャラー',
+        'プリースト',
+        'フェアリーテイマー',
+        'デーモンルーラー'
+    ],
+    a: [
+        'ファイター', 'グラップラー', 'フェンサー',
+        'ソーサラー', 'コンジャラー', 'プリースト', 'フェアリーテイマー',
+        'デーモンルーラー'
+    ],
+    b: [
+    ],
+    table: [
+        500,
+        1000,
+        1000,
+        1500,
+        1500,
+        2000,
+        2500,
+        3000,
+        4000,
+        5000,
+        6000,
+        7500,
+        9000,
+        10500,
+        12000,
+        13500
+    ],
+    isMagician: function (name) {
+        return Skill.magic.indexOf(name) >= 0;
+    },
+    magicPower: function (name, level, character) {
+        return Skill.isMagician(name)
+            ? level + character.bonuses[4]
+            : 0;
+    },
+    base: function (level, bonus) {
+        return level ? level + bonus : 0;
+    },
+    isA: function (name) {
+        return Skill.a.indexOf(name) >= 0;
+    },
+    next: function (name, level) {
+        return Skill.table[(+level) + (Skill.isA ? 1 : 0)];
+    },
+    total: function (name, level) {
+        var sum = 0;
+        var table = Skill.isA ? 0 : -1;
+
+        for (var i = 1; i <= level; ++i) {
+            sum += Skill.table[i + table];
+        }
+
+        return sum;
+    }
+};
+
+module.exports = Skill;
+
+
+},{}],8:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":8}],7:[function(require,module,exports){
+},{"./lib/axios":10}],9:[function(require,module,exports){
 'use strict';
 
 /*global ActiveXObject:true*/
@@ -618,7 +808,7 @@ module.exports = function xhrAdapter(resolve, reject, config) {
   request.send(data);
 };
 
-},{"./../defaults":11,"./../helpers/buildUrl":12,"./../helpers/cookies":13,"./../helpers/parseHeaders":15,"./../helpers/transformData":17,"./../helpers/urlIsSameOrigin":18,"./../utils":19}],8:[function(require,module,exports){
+},{"./../defaults":13,"./../helpers/buildUrl":14,"./../helpers/cookies":15,"./../helpers/parseHeaders":17,"./../helpers/transformData":19,"./../helpers/urlIsSameOrigin":20,"./../utils":21}],10:[function(require,module,exports){
 'use strict';
 
 var defaults = require('./defaults');
@@ -731,7 +921,7 @@ axios.interceptors = {
   createShortMethodsWithData('post', 'put', 'patch');
 })();
 
-},{"./core/InterceptorManager":9,"./core/dispatchRequest":10,"./defaults":11,"./helpers/deprecatedMethod":14,"./helpers/spread":16,"./utils":19,"es6-promise":20}],9:[function(require,module,exports){
+},{"./core/InterceptorManager":11,"./core/dispatchRequest":12,"./defaults":13,"./helpers/deprecatedMethod":16,"./helpers/spread":18,"./utils":21,"es6-promise":22}],11:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -785,7 +975,7 @@ InterceptorManager.prototype.forEach = function (fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":19}],10:[function(require,module,exports){
+},{"./../utils":21}],12:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -816,7 +1006,7 @@ module.exports = function dispatchRequest(config) {
 
 }).call(this,require('_process'))
 
-},{"../adapters/http":7,"../adapters/xhr":7,"_process":21}],11:[function(require,module,exports){
+},{"../adapters/http":9,"../adapters/xhr":9,"_process":23}],13:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -870,7 +1060,7 @@ module.exports = {
   xsrfHeaderName: 'X-XSRF-TOKEN'
 };
 
-},{"./utils":19}],12:[function(require,module,exports){
+},{"./utils":21}],14:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -924,7 +1114,7 @@ module.exports = function buildUrl(url, params) {
   return url;
 };
 
-},{"./../utils":19}],13:[function(require,module,exports){
+},{"./../utils":21}],15:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -963,7 +1153,7 @@ module.exports = {
   }
 };
 
-},{"./../utils":19}],14:[function(require,module,exports){
+},{"./../utils":21}],16:[function(require,module,exports){
 'use strict';
 
 /**
@@ -987,7 +1177,7 @@ module.exports = function deprecatedMethod(method, instead, docs) {
   } catch (e) {}
 };
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1023,7 +1213,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":19}],16:[function(require,module,exports){
+},{"./../utils":21}],18:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1052,7 +1242,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1073,7 +1263,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":19}],18:[function(require,module,exports){
+},{"./../utils":21}],20:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1127,7 +1317,7 @@ module.exports = function urlIsSameOrigin(requestUrl) {
         parsed.host === originUrl.host);
 };
 
-},{"./../utils":19}],19:[function(require,module,exports){
+},{"./../utils":21}],21:[function(require,module,exports){
 'use strict';
 
 /*global toString:true*/
@@ -1346,7 +1536,7 @@ module.exports = {
   trim: trim
 };
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -2308,7 +2498,7 @@ module.exports = {
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"_process":21}],21:[function(require,module,exports){
+},{"_process":23}],23:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -2400,7 +2590,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 var SW2CharacterSheet = require('./sw2/CharacterSheet');
@@ -2411,7 +2601,7 @@ React.render(
 );
 
 
-},{"./sw2/CharacterSheet":5}]},{},[22])
+},{"./sw2/CharacterSheet":6}]},{},[24])
 
 
 //# sourceMappingURL=index.js.map

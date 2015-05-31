@@ -16,6 +16,7 @@
     "skills": [
         {"name": "ファイター", "level": 10},
         {"name": "スカウト", "level": 9},
+        {"name": "ソーサラー", "level": 9},
         {"name": "エンハンサー", "level": 2},
         {"name": "バード", "level": 1},
         {"name": "ライダー", "level": 1},

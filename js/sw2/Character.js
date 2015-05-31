@@ -2,6 +2,7 @@
 
 var hash = require('../hash');
 var Ability = require('./Ability');
+var Skill = require('./Skill');
 var InputContainer = require('../InputContainer');
 var InputTable = require('../InputTable');
 
@@ -15,7 +16,7 @@ module.exports = React.createClass({displayName: "exports",
             }.bind(this); 
 
             return (
-                React.createElement(InputContainer, {label: label, type: options.type, value: hash.get(this.props.data, key), className: options.className, readOnly: options.readOnly, onChange: onChange})
+                React.createElement(InputContainer, {label: label, type: options.type, value: hash.get(this.props.data, key), className: options.className, options: options.options, readOnly: options.readOnly, onChange: onChange})
             );
         }.bind(this);
 
@@ -136,7 +137,7 @@ module.exports = React.createClass({displayName: "exports",
                 ), 
                 React.createElement("div", {className: "panel skill"}, 
                     inputTable('skills', [
-                        {key: 'name', label: '技能'},
+                        {key: 'name', label: '技能', type: 'select', options: Skill.byCategory('options')},
                         {key: 'level', label: 'レベル', type: 'number'},
                         {key: 'magic_power', label: '魔力', type: 'number', readOnly: true},
                         {key: 'next', label: '次', type: 'number', readOnly: true},
@@ -163,7 +164,17 @@ module.exports = React.createClass({displayName: "exports",
                     )
                 ), 
                 React.createElement("div", {className: "panel evasion"}, 
-                    inputContainer('evasion_skill', '回避技能'), 
+                    
+                        inputContainer('evasion_skill', '回避技能', {
+                            type: 'select',
+                            options: Skill.evasion()
+                                .filter(function (name) {
+                                    return (this.props.data.skills || []).find(function (skill) {
+                                        return skill.name == name;
+                                    })
+                                }.bind(this))
+                        }), 
+                    
                     React.createElement("div", {className: "row"}, 
                     inputContainer('protection', '防護点', {type: 'number', readOnly: true}), 
                     inputContainer('evasion', '回避力', {type: 'number', readOnly: true})

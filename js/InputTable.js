@@ -22,7 +22,7 @@ module.exports = React.createClass({displayName: "exports",
                                     this.props.onChange(index, key.key, value);
                                 }.bind(this);
                                 return (
-                                    React.createElement("td", null, React.createElement(InputContainer, {value: line[key.key], type: key.type, readOnly: key.readOnly, onChange: onChange}))
+                                    React.createElement("td", null, React.createElement(InputContainer, {value: line[key.key], type: key.type, options: key.options, readOnly: key.readOnly, onChange: onChange}))
                                 );
                             }.bind(this)))
                         );

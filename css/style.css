@@ -424,15 +424,21 @@ th {
 }
 .input-container input {
   width: 100%;
+}
+.input-container input,
+.input-container select {
   border: none;
 }
-.input-container input:not([readonly]) {
+.input-container input:not([readonly]),
+.input-container select:not([readonly]) {
   border-bottom: 1px solid lightgray;
 }
-.input-container input:focus {
+.input-container input:focus,
+.input-container select:focus {
   border-bottom-color: gray;
 }
-.input-container input[type=number] {
+.input-container input[type=number],
+.input-container select[type=number] {
   text-align: right;
 }
 .input-container.right input {
@@ -448,7 +454,8 @@ th {
 }
 .input-container:not(.empty) input:not(:focus) + label,
 .input-container input:focus + label,
-.input-container input[readonly] + label {
+.input-container input[readonly] + label,
+.input-container select + label {
   transform: translateY(-24px);
 }
 table .input-container {

@@ -14,14 +14,31 @@ module.exports = React.createClass({displayName: "exports",
         var type = this.props.type || 'text';
         var id = getId(type);
 
-        if (this.props.readOnly && type == 'number') {
+        if (this.props.readOnly && type != 'text') {
             type = 'text';
         }
 
         var contents = [];
-        contents.push(
-            React.createElement("input", {id: id, type: type, value: this.props.value, readOnly: this.props.readOnly, onChange: this.handleChange})
-        );
+        if (!this.props.readOnly && type == 'select') {
+            var options = this.props.options.map(function (option) {
+                return option.options
+                    ? (React.createElement("optgroup", {label: option.name}, 
+                        option.options.map(function (option) {
+                            return (React.createElement("option", {value: option}, option));
+                        })
+                    ))
+                    : (React.createElement("option", {value: option}, option))
+            });
+            contents.push(
+                    React.createElement("select", {id: id, value: this.props.value, readOnly: this.props.readOnly, onChange: this.handleChange}, 
+                        options
+                    )
+                    );
+        } else {
+            contents.push(
+                    React.createElement("input", {id: id, type: type, value: this.props.value, readOnly: this.props.readOnly, onChange: this.handleChange})
+                    );
+        }
 
         if (this.props.label) {
             contents.push(

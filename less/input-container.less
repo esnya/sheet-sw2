@@ -4,6 +4,8 @@
 
     input {
         width: 100%;
+    }
+    input, select {
         border: none;
 
         &:not([readonly]) {
@@ -33,7 +35,8 @@
 
     &:not(.empty) input:not(:focus) + label,
     input:focus + label,
-    input[readonly] + label {
+    input[readonly] + label,
+    select + label {
         transform: translateY(-24px);
     }
 }

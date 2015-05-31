@@ -15,14 +15,31 @@ module.exports = React.createClass({displayName: "exports",
         var type = this.props.type || 'text';
         var id = getId(type);
 
-        if (this.props.readOnly && type == 'number') {
+        if (this.props.readOnly && type != 'text') {
             type = 'text';
         }
 
         var contents = [];
-        contents.push(
-            React.createElement("input", {id: id, type: type, value: this.props.value, readOnly: this.props.readOnly, onChange: this.handleChange})
-        );
+        if (!this.props.readOnly && type == 'select') {
+            var options = this.props.options.map(function (option) {
+                return option.options
+                    ? (React.createElement("optgroup", {label: option.name}, 
+                        option.options.map(function (option) {
+                            return (React.createElement("option", {value: option}, option));
+                        })
+                    ))
+                    : (React.createElement("option", {value: option}, option))
+            });
+            contents.push(
+                    React.createElement("select", {id: id, value: this.props.value, readOnly: this.props.readOnly, onChange: this.handleChange}, 
+                        options
+                    )
+                    );
+        } else {
+            contents.push(
+                    React.createElement("input", {id: id, type: type, value: this.props.value, readOnly: this.props.readOnly, onChange: this.handleChange})
+                    );
+        }
 
         if (this.props.label) {
             contents.push(
@@ -78,7 +95,7 @@ module.exports = React.createClass({displayName: "exports",
                                     this.props.onChange(index, key.key, value);
                                 }.bind(this);
                                 return (
-                                    React.createElement("td", null, React.createElement(InputContainer, {value: line[key.key], type: key.type, readOnly: key.readOnly, onChange: onChange}))
+                                    React.createElement("td", null, React.createElement(InputContainer, {value: line[key.key], type: key.type, options: key.options, readOnly: key.readOnly, onChange: onChange}))
                                 );
                             }.bind(this)))
                         );
@@ -255,6 +272,7 @@ module.exports = Ability;
 
 var hash = require('../hash');
 var Ability = require('./Ability');
+var Skill = require('./Skill');
 var InputContainer = require('../InputContainer');
 var InputTable = require('../InputTable');
 
@@ -268,7 +286,7 @@ module.exports = React.createClass({displayName: "exports",
             }.bind(this); 
 
             return (
-                React.createElement(InputContainer, {label: label, type: options.type, value: hash.get(this.props.data, key), className: options.className, readOnly: options.readOnly, onChange: onChange})
+                React.createElement(InputContainer, {label: label, type: options.type, value: hash.get(this.props.data, key), className: options.className, options: options.options, readOnly: options.readOnly, onChange: onChange})
             );
         }.bind(this);
 
@@ -389,7 +407,7 @@ module.exports = React.createClass({displayName: "exports",
                 ), 
                 React.createElement("div", {className: "panel skill"}, 
                     inputTable('skills', [
-                        {key: 'name', label: '技能'},
+                        {key: 'name', label: '技能', type: 'select', options: Skill.byCategory('options')},
                         {key: 'level', label: 'レベル', type: 'number'},
                         {key: 'magic_power', label: '魔力', type: 'number', readOnly: true},
                         {key: 'next', label: '次', type: 'number', readOnly: true},
@@ -416,7 +434,17 @@ module.exports = React.createClass({displayName: "exports",
                     )
                 ), 
                 React.createElement("div", {className: "panel evasion"}, 
-                    inputContainer('evasion_skill', '回避技能'), 
+                    
+                        inputContainer('evasion_skill', '回避技能', {
+                            type: 'select',
+                            options: Skill.evasion()
+                                .filter(function (name) {
+                                    return (this.props.data.skills || []).find(function (skill) {
+                                        return skill.name == name;
+                                    })
+                                }.bind(this))
+                        }), 
+                    
                     React.createElement("div", {className: "row"}, 
                     inputContainer('protection', '防護点', {type: 'number', readOnly: true}), 
                     inputContainer('evasion', '回避力', {type: 'number', readOnly: true})
@@ -519,7 +547,7 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 
-},{"../InputContainer":1,"../InputTable":2,"../hash":3,"./Ability":4}],6:[function(require,module,exports){
+},{"../InputContainer":1,"../InputTable":2,"../hash":3,"./Ability":4,"./Skill":7}],6:[function(require,module,exports){
 'use strict';
 
 var axios = require('axios');
@@ -692,7 +720,59 @@ var Skill = {
         }
 
         return sum;
-    }
+    },
+    evasion: function () {
+        return [
+            'ファイター',
+            'グラップラー',
+            'フェンサー',
+            'シューター',
+            'デーモンルーラー'
+        ];
+    },
+    byCategory: function (key) {
+        key = key || 'skills';
+
+        var skills = [
+            {
+                name: '戦士系',
+            },
+            {
+                name: '魔法使い系',
+            },
+            {
+                name: 'その他系'
+            }
+        ];
+
+        skills[0][key] = [
+            'ファイター',
+            'グラップラー',
+            'フェンサー',
+            'シューター'
+        ];
+
+        skills[1][key] = [
+            'ソーサラー',
+            'コンジャラー',
+            'プリースト',
+            'フェアリーテイマー',
+            'デーモンルーラー'
+        ];
+
+        skills[2][key] = [
+            'スカウト',
+            'レンジャー',
+            'セージ',
+            'エンハンサー',
+            'バード',
+            'ライダー',
+            'ミスティック',
+            'ウォーリーダー'
+        ];
+
+        return skills;
+    },
 };
 
 module.exports = Skill;

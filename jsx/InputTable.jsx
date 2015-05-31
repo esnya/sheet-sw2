@@ -22,7 +22,7 @@ module.exports = React.createClass({
                                     this.props.onChange(index, key.key, value);
                                 }.bind(this);
                                 return (
-                                    <td><InputContainer value={line[key.key]} type={key.type} readOnly={key.readOnly} onChange={onChange}/></td>
+                                    <td><InputContainer value={line[key.key]} type={key.type} options={key.options} readOnly={key.readOnly} onChange={onChange}/></td>
                                 );
                             }.bind(this))}</tr>
                         );

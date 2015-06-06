@@ -26,7 +26,11 @@ gulp.task('scripts', ['jsx'], function () {
         debug: true
     })
     .bundle()
-    .pipe(plumber())
+    .on('error', function (error) {
+        console.dir(error);
+        this.emit('end');
+    })
+    //.pipe(plumber())
     .pipe(source('index.js'))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))

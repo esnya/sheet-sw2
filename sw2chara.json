@@ -8,6 +8,11 @@
     "fumbles": 1,
     "experience": 50,
     "nationality": "冒険者",
+    "ability": {
+        "base3": [8, 9, 4],
+        "base": [9, 9, 9, 7, 8, 4],
+        "growth": [8, 11, 6, 4, 16, 5]
+    },
     "skill": 8,
     "body": 9,
     "mind": 4,

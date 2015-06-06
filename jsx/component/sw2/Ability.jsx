@@ -3,6 +3,7 @@
 var Ability = React.createClass({
     render: function () {
         var data = this.props.data;
+        var ability = data.ability;
 
         var radius = this.props.radius || 120;
         var margin = radius / 5 * 2;
@@ -22,32 +23,22 @@ var Ability = React.createClass({
             };
         };
         
-        var abilities = [];
-        var sumlist = {
-            base: [],
-            ability: [],
-            growth: [],
-            sum: []
-        };
-        if (data.abilities) {
+        var rlist = new Array(5);
+        for (var i = 0; i < 5; ++i) {
+            rlist[i] = new Array(6);
+            rlist[i].fill(0);
+        }
+
+        if (ability) {
             for (var i = 0; i < 6; ++i) {
-                var base = +data[['skill', 'body', 'mind'][Math.floor(i / 2)]];
-
-                var ability = +data.abilities[i];
-                var growth = +data.growths[i];
-
-                // ToDo corrects
-                var correct = 0;
-                var sum = base + ability + growth;
-                var bonus = Math.floor(sum / 6);
-
-                sumlist.base.push(base);
-                sumlist.ability.push(base + ability);
-                sumlist.growth.push(base + ability + growth);
-                sumlist.sum.push(sum);
-
-                abilities.push([base, ability, growth, correct].join(',') + '\n'  + sum + ' (+' + bonus + ')');
+                rlist[0][i] = (+ability.base3[Math.floor(i / 2)]);
+                rlist[1][i] = rlist[0][i] + (+ability.base[i]);
+                rlist[2][i] = rlist[1][i] + (+ability.growth[i]);
+                rlist[3][i] = rlist[2][i] + (+ability.correct[i]);
+                rlist[4][i] = +ability.sum[i];
             }
+            console.log(ability.base3);
+            console.log(rlist[0]);
         }
 
         var rader = function (sum, n) {
@@ -61,10 +52,11 @@ var Ability = React.createClass({
                 <svg className="rader" width={size * 2} height={size * 2}>
                     <g style={{transform: 'translate(' + size + 'px, ' + size + 'px)'}}>
                         <g className="rader">
-                            <polygon points={sumlist.sum.map(rader)}/>
-                            <polygon points={sumlist.growth.map(rader)}/>
-                            <polygon points={sumlist.ability.map(rader)}/>
-                            <polygon points={sumlist.base.map(rader)}/>
+                            <polygon points={rlist[4].map(rader)}/>
+                            <polygon points={rlist[3].map(rader)}/>
+                            <polygon points={rlist[2].map(rader)}/>
+                            <polygon points={rlist[1].map(rader)}/>
+                            <polygon points={rlist[0].map(rader)}/>
                         </g>
                         <g className="grid">
                             {points.map(
@@ -88,13 +80,13 @@ var Ability = React.createClass({
 
                                         var label = ['器用度', '敏捷度', '筋力', '生命力', '知力', '精神力'][n];
 
-                                        if (abilities[n]) {
-                                            label += '\n' + abilities[n];
+                                        if (ability) {
+                                            label += '\n' + ability.sum[n] + ' (+' + ability.bonus[n] + ')';
                                         }
 
                                         var text = label.split('\n').map(
                                                 function (line, n) {
-                                                    return (<text x={x} y={y + n * 15 - 7.5}>{line}</text>);
+                                                    return (<text x={x} y={y + n * 18 - 7.5}>{line}</text>);
                                                 });
 
                                         return text;

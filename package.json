@@ -32,7 +32,9 @@
     "gulp-react": "^3.0.1",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-webserver": "^0.9.1",
+    "material-ui": "^0.8.0",
     "react": "^0.13.3",
+    "react-tap-event-plugin": "^0.1.7",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },

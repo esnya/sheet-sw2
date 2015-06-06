@@ -1,31 +1,59 @@
 'use strict';
 var hash = require('../../hash');
 var React = require('react');
-var Tab = require('../../Tab');
-var InputContainer = require('../../InputContainer');
+var MUI = require('material-ui');
+var TextField = MUI.TextField;
+var Checkbox = MUI.Checkbox;
+var Tabs = MUI.Tabs;
+var Tab = MUI.Tab;
+var Paper = MUI.Paper;
+var FlatButton = MUI.FlatButton;
 
-var Page = React.createClass({
+var WeaponTab = React.createClass({
     handleRemove: function () {
-        this.props.options.onRemove(this.props.index);
+        this.props.onRemove(this.props.index);
     },
     render: function () {
+        var _onChange = this.props.onChange;
+        var index = this.props.index;
+
         var inputContainer = function (key, label, options) {
             options = options || {};
 
-            var onChange = function (value) {
-                this.props.options.onChange(['weapons', this.props.index, key].join('.'), value);
-            }.bind(this); 
+            if (options.type == 'checkbox') {
+                var onCheck = function (event, checked) {
+                    _onChange(['weapons', index, key].join('.'), checked);
+                }; 
 
-            return (
-                <InputContainer label={label} type={options.type} value={hash.get(this.props.data, key)} className={options.className} options={options.options} readOnly={options.readOnly} onChange={onChange}/>
-            );
+                return (
+                        <Checkbox
+                            floatingLabelText={label}
+                            value={hash.get(this.props.data, key)} 
+                            readOnly={options.readOnly}
+                            disabled={options.disabled}
+                            onCheck={onCheck} />
+                       );
+            } else {
+                var onChange = function (event) {
+                    _onChange(['weapons', index, key].join('.'), event.target.value);
+                }; 
+
+                return (
+                        <TextField
+                            floatingLabelText={label}
+                            value={hash.get(this.props.data, key)} 
+                            readOnly={options.readOnly}
+                            disabled={options.disabled}
+                            onChange={onChange} />
+                       );
+            }
         }.bind(this);
 
         return (
                 <div>
                     <div className="row">
                         {inputContainer('name', '武器')}
-                        <button onClick={this.handleRemove}>×</button>
+                        <FlatButton onClick={this.handleRemove}>×</FlatButton>
                     </div>
 
                     <div className="row">
@@ -44,7 +72,7 @@ var Page = React.createClass({
                         {inputContainer('impact', '威力', {type: 'number'})}
                         {inputContainer('critical', 'C値', {type: 'number'})}
                     </div>
-                    <div className="panel">
+                    <Paper>
                         <table>
                             <thead>
                                 <tr>
@@ -77,21 +105,35 @@ var Page = React.createClass({
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </Paper>
                 </div>
                );
     }
-})
+});
 
-module.exports = React.createClass({
+var Weapon = React.createClass({
     render: function () {
         return (
-                <div className="panel weapon">
-                    <Tab page={Page} pageOptions={{
-                        onChange: this.props.onChange,
-                        onRemove: this.props.onRemove
-                    }} title="name" data={this.props.data.weapons} actions={['＋']} selected="0" onAction={this.props.onAppend} />
-                </div>
+                <Paper className="weapon">
+                    <Tabs>
+                        {
+                            (this.props.data.weapons || []).map(function (weapon, index) {
+                                return (
+                                        <Tab label={weapon.name}>
+                                            <WeaponTab
+                                                index={index}
+                                                data={weapon}
+                                                onChange={this.props.onChange}
+                                                onRemove={this.props.onRemove} />
+                                        </Tab>
+                                       );
+                            }, this)
+                        }
+                    </Tabs>
+                    <FlatButton onClick={this.props.onAppend}>＋</FlatButton>
+                </Paper>
             );
     }
 });
+
+module.exports = Weapon;

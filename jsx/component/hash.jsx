@@ -28,7 +28,6 @@ var _remove = function (o, key, value) {
         } else {
             delete o[key[0]];
         }
-        console.log(o, key[0]);
     } else {
         _remove(o[key[0]], key.slice(1), value);
     }

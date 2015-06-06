@@ -39,8 +39,6 @@ var Ability = React.createClass({
                 rlist[3][i] = rlist[2][i] + (+ability.correct[i]);
                 rlist[4][i] = +ability.sum[i];
             }
-            console.log(ability.base3);
-            console.log(rlist[0]);
         }
 
         var rader = function (sum, n) {

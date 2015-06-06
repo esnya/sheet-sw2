@@ -1,5 +1,7 @@
 'use strict';
 
+var React = require('react');
+
 var Dialog = React.createClass({
     render: function () {
         var actions = (this.props.actions || ['閉じる']).map(function (action) {

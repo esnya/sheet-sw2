@@ -1,5 +1,6 @@
 'use strict';
 var hash = require('../../hash');
+var React = require('react');
 var Tab = require('../../Tab');
 var InputContainer = require('../../InputContainer');
 

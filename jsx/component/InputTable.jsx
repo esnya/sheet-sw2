@@ -1,8 +1,9 @@
 'use strict';
 
+var React = require('react');
 var InputContainer = require('./InputContainer');
 
-module.exports = React.createClass({
+var InputTable = React.createClass({
     render: function () {
         var headline = this.props.keys.map(function (key) {
             return (
@@ -47,3 +48,4 @@ module.exports = React.createClass({
     }
 });
 
+module.exports = InputTable;

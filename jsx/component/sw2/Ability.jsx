@@ -1,5 +1,7 @@
 'use strict';
 
+var React = require('react');
+
 var Ability = React.createClass({
     render: function () {
         var data = this.props.data;

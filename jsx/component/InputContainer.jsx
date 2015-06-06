@@ -1,12 +1,13 @@
 'use strict';
 
-var _counter = 0;
+var React = require('react');
 
+var _counter = 0;
 var getId = function (prefix) {
     return 'input-container-input-' + (++_counter);
 };
 
-module.exports = React.createClass({
+var InputContainer = React.createClass({
     handleChange: function (event) {
         var target = event.target;
         this.props.onChange(target.type == 'checkbox' ? target.checked : target.value);
@@ -68,3 +69,5 @@ module.exports = React.createClass({
         );
     }
 });
+
+module.exports = InputContainer;

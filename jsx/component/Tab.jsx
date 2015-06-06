@@ -1,6 +1,8 @@
 'use strict';
 
-module.exports = React.createClass({
+var React = require('react');
+
+var Tab = React.createClass({
     getInitialState: function () {
         return {
             selected: (this.props.selected == null) ? -1 : this.props.selected
@@ -63,3 +65,5 @@ module.exports = React.createClass({
                );
     }
 });
+
+module.exports = Tab;

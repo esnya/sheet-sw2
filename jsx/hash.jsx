@@ -8,6 +8,22 @@ var _get = function (o, key) {
     return _get(o[key[0]], key.slice(1));
 };
 
+var _extract = function (o, key) {
+    if (key.length == 0 || o == null) {
+        return o;
+    }
+
+    if (key[0] == '*') {
+        var results = [];
+        for (var _key in o) {
+            results.push(_extract(o[_key], key.slice(1)));
+        }
+        return results;
+    } else {
+        return _extract(o[key[0]], key.slice(1));
+    }
+};
+
 var _set = function (o, key, value) {
     if (key.length <= 1) {
         o[key[0]] = value;
@@ -39,6 +55,9 @@ var _remove = function (o, key, value) {
 var hash = {
     get: function (o, key) {
         return _get(o, key.split('.'));
+    },
+    extract: function (o, key) {
+        return _extract(o, key.split('.'));
     },
     set: function (o, key, value) {
         return _set(o, key.split('.'), value);

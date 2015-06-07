@@ -1,320 +1,444 @@
 'use strict';
 
 var hash = require('../hash');
-var skill = require('./skill');
 
-var add = function (a, b) {
-    return {
-        op: 'add',
-        a: a,
-        b: b
-    };
-};
-var sum = function (a, b) {
-    return {
-        op: 'sum',
-        a: a,
-        b: b
-    };
-};
-var max = function (a, b) {
-    return {
-        op: 'max',
-        a: a,
-        b: b
-    };
-};
-var div = function (a, b) {
-    return {
-        op: 'div',
-        a: a,
-        b: b
-    };
-};
-var each = function (a, b) {
-    return {
-        op: 'each',
-        a: a,
-        b: b
-    };
-};
-var zero = function (a, b) {
-    return {
-        op: 'zero',
-        a: a,
-        b: b
-    };
-};
-var floor = function (a, b) {
-    return {
-        op: 'floor',
-        a: a,
-        b: b
-    };
-};
-
-var build = function (target) {
-    var dirty = true;
-    var dependics = {};
-
-    var flush = function (target, key) {
-        target.dirty = true;
-        //var targets = dependics[key];
-
-        //if (targets) {
-        //    var cache = target._cache;
-        //    targets.forEach(function (key) {
-        //        hash.remove(cache, key);
-        //    });
-        //}
-    };
-
-    Object.keys(target.dependics).forEach(function (key) {
-        var node = target.dependics[key];
-
-        var getDependeds = function (node) {
-            if (typeof(node) == 'string') {
-                if (!(node in dependics)) {
-                    dependics[node] = [];
-                }
-                dependics[node].push(key);
-
-                if (node.match('.*.')) {
-                    var path = node.split('.*.')[0];
-                    if (!(path in dependics)) {
-                        dependics[path] = [];
-                    }
-                    dependics[path].push(key);
-                }
-            } else if (node) {
-                if (node.a) getDependeds(node.a);
-                if (node.b) getDependeds(node.b);
-            }
-        };
-        getDependeds(node);
-
-        Object.defineProperty(target.prototype, key, {
-            enumerable: true,
-            get: function () {
-                if (this.dirty || this._cache[key] == null) {
-                    var _this = this;
-
-                    var exec = function (node) {
-                        var aggregate = function (callback, init) {
-                            var path = node.a.split('.*.');
-                            return (hash.get(_this, path[0]) || []).map(function (item) {
-                                return (+hash.get(item, path[1])) || 0;
-                            }).reduce(callback, node.b || init);
-                        };
-
-                        if (typeof(node) == 'string') {
-                            return +hash.get(_this, node);
-                        } else if (node.op == 'zero') {
-                            return 0;
-                        } else if (node.op == 'add') {
-                            return exec(node.a) + exec(node.b);
-                        } else if (node.op == 'sum') {
-                            return aggregate(function (a, b) { return a + b; }, 0);
-                        } else if (node.op == 'max') {
-                            return aggregate(function (a, b) { return a > b ? a : b; });
-                        } else if (node.op == 'each') {
-                            var results = [];
-                            for (var i = 0; i < node.b; ++i) {
-                                var next = node.a;
-                                if (typeof(next.a) == 'string') next.a += '.' + i;
-                                if (typeof(next.b) == 'string') next.b += '.' + i;
-
-                                var result = exec(node.a);
-                            }
-                        } else if (typeof(node) == 'function') {
-                            return node(_this);
-                        }
-                    };
-
-                    hash.set(_this._cache, key, exec(node));
-
-                    flush(_this, key);
-                }
-                return this._cache[key];
-            }
-        });
-    });
-
-    target.fields.forEach(function (key) {
-        Object.defineProperty(target.prototype, key, {
-            enumerable: true,
-            configurable: true,
-            get: function () {
-                return hash.get(this._data, key);
-            },
-            set: function (value) {
-                hash.set(this._data, key, value);
-                flush(this, key);
-            }
-        });
-    });
-
-    target.prototype.append = function (key, value) {
-        var SubModule = Character.hasMany[key];
-        if (SubModule) {
-            hash.get(this, key).push(new SubModule(this, value || {}));
-            flush(this, key);
-        }
-    };
-
-    target.prototype.remove = function (key, index) {
-        var a = hash.get(this, key);
-        for (var i = index; i < a.length; ++i) {
-            a[i] = a[i + 1];
-        }
-        --a.length;
-
-        flush(this, key);
-    };
-
-    Object.defineProperty(target.prototype, 'dirty', {
-        get: function () {
-            if (this.parent) {
-                return this.parent.dirty;
+var Virtual = (function () {
+    var funcs = {
+        num: function (data) {
+            return (+this.a);
+        },
+        field: function (data) {
+            var value = hash.extract(data, this.a);
+            if (Array.isArray(value)) {
+                return value;
             } else {
-                return dirty;
+                return +value;
             }
         },
-        set: function (value) {
-            if (this.parent) {
-                this.parent.dirty = value;
-            } else {
-                dirty = value;
+        add: function (data) {
+            return this.a.eval(data) + this.b.eval(data);
+        },
+        sub: function (data) {
+            return this.a.eval(data) + this.b.eval(data);
+        },
+        mul: function (data) {
+            return this.a.eval(data) * this.b.eval(data);
+        },
+        div: function (data) {
+            return this.a.eval(data) / this.b.eval(data);
+        },
+        floor: function (data) {
+            return Math.floor(this.a.eval(data));
+        },
+        map: function (data) {
+            var b = this.b;
+            return (this.a.eval(data) || []).map(function (a) {
+                if (b.a) {
+                    b.b = {
+                        a: +a,
+                        eval: funcs.num
+                    };
+                } else {
+                    b.a = {
+                        a: +a,
+                        eval: funcs.num
+                    };
+                    console.log(b);
+                }
+                return b.eval(data);
+            });
+        },
+        sum: function (data) {
+            return (this.a.eval(data) || []).reduce(function (a, b) {
+                return (+a) + (+b);
+            }, this.b ? (+this.b.eval(data) || 0) : 0);
+        },
+        max: function (data) {
+            return (this.a.eval(data) || []).reduce(function (a, b) {
+                return Math.max(+a, +b);
+            }, this.b ? (+this.b.eval(data) || 0) : 0);
+        },
+        stretch: function (data) {
+            var src = this.a.eval(data) || [];
+            var dst = [];
+
+            var r = +this.b.eval(data);
+            var len = src.length * r;
+
+            for (var i = 0; i < len; ++i) {
+                dst.push(src[Math.floor(i / r)]);
             }
+
+            return dst;
+        },
+        adda: function (data) {
+            var a = this.a.eval(data) || [];
+            var b = this.b.eval(data) || [];
+            var len = Math.min(a.length, b.length);
+
+            var result = [];
+            for (var i = 0; i < len; ++i) {
+                result.push(a[i] + b[i]);
+            }
+
+            return result;
         }
-    });
-};
-
-var createSubModule = function (fields, dependics) {
-    fields = fields || [];
-    dependics = dependics || {};
-
-    var subModule = function (parent, data) {
-        this.parent = parent;
-
-        Object.defineProperty(this, '_cache', {
-            writable: true,
-            value: {}
-        });
-        Object.defineProperty(this, '_data', {
-            writable: true,
-            value: data
-        });
     };
 
-    subModule.fields = fields;
-    subModule.dependics = dependics;
-
-    build(subModule);
-
-    return subModule;
-};
-
-var Character = function (data) {
-    Object.defineProperty(this, '_cache', {
-        writable: true,
-        value: {}
-    });
-    Object.defineProperty(this, '_data', {
-        writable: true,
-        value: data
-    });
-
-    var _this = this;
-
-    Object.keys(Character.hasOne).forEach(function (key) {
-        var SubModule = Character.hasOne[key];
-        Object.defineProperty(this, key, {
-            enumerable: true,
-            value: new SubModule(_this, hash.get(data, key))
-        });
-    }.bind(this));
-
-    Object.keys(Character.hasMany).forEach(function (key) {
-        Object.defineProperty(this, key, {
-            enumerable: true,
-            value: (hash.get(data, key) || []).map(function (data) {
-                var SubModule = Character.hasMany[key];
-                return new SubModule(_this, data);
-            })
-        });
-    }.bind(this));
-};
-
-Character.fields = [
-    'id',
-    'name',
-    'user_id',
-    'race',
-    'sex',
-    'age',
-    'fumbles',
-    'expreience',
-    'nationality',
-    'evasion_skill',
-    'notes',
-    'inventory',
-    'honor',
-    'instrument',
-    'pet'
-];
-
-Character.hasOne = {
-    ability: createSubModule(
-                     ['base3', 'base', 'growth'],
-                     {
-                         correct: function (_this) {
-                             return [0, 0, 0, 0, 0, 0];
-                         },
-                         sum: function (_this) {
-                             return _this.base.map(function (base, i) {
-                                 return (+_this.base3[Math.floor(i / 2)])
-                                     + (+base)
-                                     + (+_this.growth[i])
-                                     + (+_this.correct[i]);
-                             });
-                         },
-                         bonus: function (_this) {
-                             return _this.sum.map(function (sum) {
-                                 return Math.floor(sum / 6);
-                             });
-                         }
-                     })
-};
-Character.hasMany = {
-    skills: createSubModule(['name', 'level'], {
-        magic_power: function (_this) {
-            return skill.isMagicSkill(_this.name)
-                ? (+_this.level) + _this.parent.ability.bonus[4] + (+_this.parent.magic_power || 0)
-                : undefined;
+    var Virtual = {};
+    var convertArg = function (a) {
+        switch (typeof(a)) {
+            case 'string':
+                return {
+                    a: a,
+                    eval: funcs.field
+                };
+            case 'number':
+                return {
+                    a: a,
+                    eval: funcs.num
+                };
+            default:
+                return a;
         }
-    }),
-    weapons: createSubModule(['name']),
-    supplies: createSubModule(['name', 'count']),
-        //'ornaments',
-        //'money',
-    combat_feats: createSubModule(['name', 'auto', 'effect']),
-    languages: createSubModule(['name', 'talk', 'write']),
-    honorable_items: createSubModule(['name', 'value']),
-    techniques: createSubModule(['name', 'effect']),
-    songs: createSubModule(['name', 'effect']),
-    riding_skills: createSubModule(['name', 'effect']),
-    alchemist_skills: createSubModule(['name', 'effect']),
-    warleader_skills: createSubModule(['name', 'effect']),
-    mistic_skill: createSubModule(['name', 'effect'])
-};
-Character.dependics = {
-    level: max('skills.*.level'),
-    total_honor: add(sum('honorable_items.*.value'), 'honor')
+    };
+    Object.keys(funcs).forEach(function (key) {
+        Virtual[key] = function (a, b) {
+            a = convertArg(a);
+            b = convertArg(b);
+
+            return {
+                a: a,
+                b: b,
+                func: key,
+                eval: funcs[key]
+            }
+        };
+    });
+
+    return Virtual;
+})();
+var V = Virtual;
+
+var createVirtualField = function (field, op) {
+    return {
+        field: field,
+        op: op
+    };
 };
 
-build(Character);
+var createVirtualModel = function (model, fields, virtual, hasMany, hasOne) {
+    var _dependics = {};
+
+    // ctor
+    var VirtualModel = function (data, parent) {
+        this._data = data;
+        this._cache = {};
+        this.parent = parent;
+
+        if (hasMany) {
+            this._children = {};
+
+            hasMany.forEach(function (hasMany) {
+                if (data[hasMany.model]) {
+                    data[hasMany.model].forEach(function (data) {
+                        this.append(hasMany.model, data);
+                    }, this);
+                }
+            }, this);
+        }
+
+        if (hasOne) {
+            hasOne.forEach(function (hasOne) {
+                var o = new hasOne(hash.get(data, hasOne.model), this);
+                Object.defineProperty(this, hasOne.model, {
+                    enumerable: true,
+                    get: function () {
+                        return o;
+                    }
+                });
+            }, this);
+        }
+    };
+
+    VirtualModel.model = model;
+    VirtualModel._dependics = _dependics;
+
+    VirtualModel.prototype.flush = function (path) {
+        console.log('flush:', model, path);
+        if (this.parent && path.match(/^parent\./)) {
+            // child -> parent
+            this.parent.flush(path.substr(7));
+        } else if (path.match(/\.\*\./)) {
+            // parent -> child[n]
+            var s = path.split('.*.');
+            (hash.get(this, s[0]) || []).forEach(function (a) {
+                a.flush(s[1]);
+            });
+        } else if (path.match(/\./)) {
+            // parent -> child
+            var s = path.split('.');
+            if (this[s[0]]) {
+                this[s[0]].flush(s[1]);
+            }
+        } else {
+            delete this._cache[path];
+            if (VirtualModel._dependics[path]) {
+                VirtualModel._dependics[path].forEach(function (path) {
+                    this.flush(path);
+                }, this);
+            }
+        }
+    };
+
+    fields.forEach(function (field) {
+        Object.defineProperty(VirtualModel.prototype, field, {
+            enumerable: true,
+            get: function () {
+                return this._data[field];
+            },
+            set: function (value) {
+                if (VirtualModel._dependics[field]) {
+                    VirtualModel._dependics[field].forEach(function (key) {
+                        this.flush(key);
+                    }, this);
+                }
+                this._data[field] = value;
+            }
+        });
+    });
+
+    VirtualModel.depend = function (src, dst) {
+        if (!(src in _dependics)) {
+            _dependics[src] = [];
+        }
+        _dependics[src].push(dst);
+    };
+
+    if (virtual) {
+        virtual.forEach(function (virtual) {
+            var trace = function (op) {
+                if (!op) {
+                    return [];
+                } else if (typeof(op) == 'string') {
+                    return [op];
+                } else {
+                    return trace(op.a).concat(trace(op.b));
+                }
+            };
+
+            trace(virtual.op).forEach(function (src) {
+                VirtualModel.depend(src, virtual.field);
+            });
+
+            Object.defineProperty(VirtualModel.prototype, virtual.field, {
+                enumerable: true,
+                get: function () {
+                    if (virtual.field in this._cache) {
+                        return this._cache[virtual.field];
+                    } else {
+                        return (this._cache[virtual.field] = virtual.op.eval(this));
+                    }
+                }
+            });
+        });
+    }
+
+    if (hasMany) {
+        VirtualModel.hasMany = {};
+
+        VirtualModel.prototype.append = function (key, data) {
+            if (!(key in this._children)) {
+                this._children[key] = [];
+            }
+            var hasMany = VirtualModel.hasMany[key];
+            this._children[key].push(new hasMany(data, this));
+        };
+
+        hasMany.forEach(function (hasMany) {
+            VirtualModel.hasMany[hasMany.model] = hasMany;
+
+            Object.defineProperty(VirtualModel.prototype, hasMany.model, {
+                enumerable: true,
+                get: function () {
+                    return this._children[hasMany.model] || [];
+                }
+            });
+
+            Object.keys(VirtualModel._dependics).map(function (key) {
+                var s = key.split('.*.');
+                return {
+                    child: s[0],
+                    src: s[1],
+                    dst: VirtualModel._dependics[key]
+                };
+            }).filter(function (key) {
+                return key.child == hasMany.model;
+            }).forEach(function (key) {
+                hasMany.depend(key.src, 'parent.' + key.dst);
+            }, this);
+
+            Object.keys(hasMany._dependics).filter(function (key) {
+                return key.match(/^parent\./);
+            }).forEach(function (key) {
+                VirtualModel.depend(key.substr(7), [hasMany.model,'*', hasMany._dependics[key]].join('.'));
+            }, this);
+        });
+    }
+
+    if (hasOne) {
+        VirtualModel.hasOne = {};
+
+        hasOne.forEach(function (hasOne) {
+            VirtualModel.hasOne[hasOne.model] = hasOne;
+
+            Object.keys(VirtualModel._dependics).map(function (key) {
+                var s = key.split('.');
+                return {
+                    child: s[0],
+                    src: s[1],
+                    dst: VirtualModel._dependics[key]
+                };
+            }).filter(function (key) {
+                return key.child == hasOne.model;
+            }).forEach(function (key) {
+                hasOne.depend(key.src, 'parent.' + key.dst);
+            }, this);
+
+            Object.keys(hasOne._dependics).filter(function (key) {
+                return key.match(/^parent\./);
+            }).forEach(function (key) {
+                VirtualModel.depend(key.substr(7), [hasOne.model, hasOne._dependics[key]].join('.'));
+            }, this);
+        });
+    }
+
+
+    return VirtualModel;
+};
+
+//Character.fields = [
+//    'id',
+//    'name',
+//    'user_id',
+//    'race',
+//    'sex',
+//    'age',
+//    'fumbles',
+//    'expreience',
+//    'nationality',
+//    'evasion_skill',
+//    'notes',
+//    'inventory',
+//    'honor',
+//    'instrument',
+//    'pet'
+//];
+//
+//Character.hasOne = {
+//    ability: createSubModule(
+//                     'ability',
+//                     ['base3', 'base', 'growth'],
+//                     {
+//                         correct: function (_this) {
+//                             return [0, 0, 0, 0, 0, 0];
+//                         },
+//                         sum: function (_this) {
+//                             return _this.base.map(function (base, i) {
+//                                 return (+_this.base3[Math.floor(i / 2)])
+//                                     + (+base)
+//                                     + (+_this.growth[i])
+//                                     + (+_this.correct[i]);
+//                             });
+//                         },
+//                         bonus: function (_this) {
+//                             return _this.sum.map(function (sum) {
+//                                 return Math.floor(sum / 6);
+//                             });
+//                         }
+//                     })
+//};
+//Character.hasMany = {
+//    skills: createSubModule('skills', ['name', 'level'], {
+//        magic_power: function (_this) {
+//            return skill.isMagicSkill(_this.name)
+//                ? (+_this.level) + _this.parent.ability.bonus[4] + (+_this.parent.magic_power || 0)
+//                : undefined;
+//        }
+//    }),
+//    weapons: createSubModule('weapons', ['name']),
+//    supplies: createSubModule('supplies', ['name', 'count']),
+//        //'ornaments',
+//        //'money',
+//    combat_feats: createSubModule('combat_feats', ['name', 'auto', 'effect']),
+//    languages: createSubModule('languages', ['name', 'talk', 'write']),
+//    honorable_items: createSubModule('honorable_items', ['name', 'value']),
+//    techniques: createSubModule('techniques', ['name', 'effect']),
+//    songs: createSubModule('songs', ['name', 'effect']),
+//    riding_skills: createSubModule('riding_skills', ['name', 'effect']),
+//    alchemist_skills: createSubModule('alchemist_skills', ['name', 'effect']),
+//    warleader_skills: createSubModule('warleader_skills', ['name', 'effect']),
+//    mistic_skill: createSubModule('mistic_skill', ['name', 'effect'])
+//};
+//Character.dependics = {
+//    level: max('skills.*.level'),
+//    total_honor: add(sum('honorable_items.*.value'), 'honor')
+//};
+
+var Character = createVirtualModel('Character',
+        [
+            'id',
+            'name',
+            'user_id',
+            'race',
+            'sex',
+            'age',
+            'fumbles',
+            'expreience',
+            'nationality',
+            'evasion_skill',
+            'notes',
+            'inventory',
+            'honor',
+            'instrument',
+            'pet'
+        ],
+        [
+            createVirtualField('level', V.max('skills.*.level')),
+            createVirtualField('total_honor', V.add(V.sum('honorable_items.*.value'), 'honor'))
+        ],
+        [
+            createVirtualModel('skills', ['name', 'level'],
+                    [
+                        createVirtualField('magic_power', V.add('level', 'parent.ability.bonus.4'))
+                    ]),
+            createVirtualModel('weapons', ['name']),
+            createVirtualModel('supplies', ['name', 'count']),
+            createVirtualModel('combat_feats', ['name', 'talk', 'write']),
+            createVirtualModel('honorable_items', ['name', 'value']),
+            createVirtualModel('techniques', ['name', 'effect']),
+            createVirtualModel('songs', ['name', 'intoro', 'effect']),
+            createVirtualModel('riding_skills', ['name', 'effect']),
+            createVirtualModel('alchemist_skills', ['name', 'effect']),
+            createVirtualModel('warleader_skills', ['name', 'effect']),
+            createVirtualModel('mistic_skills', ['name', 'effect'])
+        ],
+        [
+            createVirtualModel('ability', ['base3', 'base', 'growth'], [
+                    createVirtualField('correct', V.num([0, 0, 0, 0, 0, 0])),
+                    createVirtualField('sum', V.adda(V.adda(V.stretch('base3', 2), 'base'), 'growth')),
+                    createVirtualField('bonus', V.map(V.map(V.adda(V.adda(V.stretch('base3', 2), 'base'), 'growth'), V.div(6)), V.floor())),
+                    //createVirtualField('bonus', V.map(V.map('sum', V.div(6)), V.floor()))
+                ])
+        ]);
 
 module.exports = Character;
 
-var c = new Character(require('../../sw2chara.json'));
+//var c = new Character(require('../../sw2chara.json'));
+//console.log(c.honor);
+//console.log(c.total_honor);
+//
+//c.honor = 1000;
+//
+//console.log(c.honor);
+//console.log(c.total_honor);

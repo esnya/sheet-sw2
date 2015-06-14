@@ -1,41 +1,70 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
 var less = require('gulp-less');
+var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
-var react = require('gulp-react');
+var reactify = require('reactify');
 var sourcemaps = require('gulp-sourcemaps');
+var uglify = require('gulp-uglify');
+var util = require('gulp-util');
 var webserver = require('gulp-webserver');
 
 var browserify = require('browserify');
 
 var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
+var notifier = require('node-notifier');
 
-gulp.task('jsx', function () {
-    return gulp.src('jsx/**/*.jsx')
-        .pipe(plumber())
-        .pipe(sourcemaps.init())
-        .pipe(react())
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('js'));
-});
+var onError = function (error) {
+    notifier.notify({
+        message: error.message,
+        title: error.plugin,
+        sound: 'Glass'
+    });
+};
 
-gulp.task('scripts', ['jsx'], function () {
+var onSuccess = function (title) {
+    notifier.notify({
+        title: title,
+        message: 'Done',
+        sound: 'Glass'
+    });
+};
+
+
+//gulp.task('jsx', function () {
+//    return gulp.src('jsx/**/*.jsx')
+//        .pipe(plumber())
+//        //.pipe(sourcemaps.init())
+//        .pipe(react())
+//        //.pipe(sourcemaps.write('.'))
+//        .pipe(gulp.dest('js'));
+//});
+
+gulp.task('_scripts', function () {
     return browserify({
-        entries: ['js/index.js'],
-        debug: true
+        entries: ['jsx/index.jsx'],
+        extensions: ['.jsx'],
+        //debug: true,
+        transform: [reactify]
     })
     .bundle()
     .on('error', function (error) {
-        console.dir(error);
+        util.log(error);
         this.emit('end');
     })
     //.pipe(plumber())
-    .pipe(source('index.js'))
+    .pipe(source('bundle.js'))
     .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(sourcemaps.write('.'))
+    //.pipe(sourcemaps.init({loadMaps: true}))
+    //.pipe(uglify())
+    //.on('error', util.log)
+    //.pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('.'));
+});
+
+gulp.task('scripts', ['_scripts'], function () {
+    onSuccess('scripts');
 });
 
 gulp.task('styles', function () {
@@ -56,7 +85,12 @@ gulp.task('watch', function () {
 gulp.task('webserver', function () {
     gulp.src('.')
         .pipe(webserver({
-            livereload: true,
+            livereload: {
+                enable: true,
+                filter: function (file) {
+                    return !file.match(/\.jsx$/);
+                }
+            },
             directoryListening: true,
             open: true
         }));

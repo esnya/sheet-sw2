@@ -2,7 +2,7 @@
 
 var React = require('react');
 var axios = require('axios');
-var hash = require('../hash');
+var hash = require('../../hash');
 var Character = require('./Character');
 var character = require('../../sw2/character');
 var AppBar = require('material-ui/lib/app-bar');
@@ -14,7 +14,7 @@ var CharacterSheet = React.createClass({
           muiTheme: React.PropTypes.object
     },
     getInitialState: function () {
-        return {data: []};
+        return {data: {}};
     },
     getChildContext() {
         return {
@@ -25,7 +25,7 @@ var CharacterSheet = React.createClass({
         axios.get(this.props.url).then(function (response) {
             var c = new character(response.data);
             this.setState({
-                data: c
+                data: c//response.data
             });
         }.bind(this));
     },
@@ -37,8 +37,8 @@ var CharacterSheet = React.createClass({
         this.state.data.append(key);
         this.forceUpdate();
     },
-    handleRemove: function (key) {
-        hash.remove(this.state.data, key);
+    handleRemove: function (key, index) {
+        this.state.data.remove(key, index);
         this.forceUpdate();
     },
     componentWillMount: function() {
@@ -47,6 +47,7 @@ var CharacterSheet = React.createClass({
         });
     },
     render: function () {
+        document.title = this.state.data.name;
         return (
             <div className="sw2-character-sheet">
                 <AppBar title={this.state.data.user_id + ' / ' + this.state.data.name} iconClassNameRight="muidocs-icon-navigation-expand-more"/>

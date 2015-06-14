@@ -1,47 +1,66 @@
 @import (reference) 'flex.less';
 
-.sw2-character {
-    &> .row {
-        .layout(column);
-        align-items: stretch;
-
-        @media screen and (min-width: 920px) {
-            .layout(row);
-
-            &> .panel {
-                .flex();
-
-                &.ability {
-                    flex: 0 0 333px;
-                }
-            }
-        }
-    }
-
-    .row {
-        .layout(row);
-
-        &> * {
-            .flex();
-        }
-        &> button {
-            flex: 0 0 0;
-        }
-    }
-
-    .ability {
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-
-        button {
-            position: relative;
-            left: 300px;
-            margin-right: -33px;
-        }
-    }
-
-    .money {
-        .layout(row);
-    }
-}
+//.sw2-character {
+//    // panel
+//    &> div:not(.row),
+//    .row > div:not(.row) {
+//        margin: 16px;
+//
+//        display: flex;
+//        flex-direction: row;
+//
+//        &> * {
+//            width: auto !important;
+//            flex: 1 1 0;
+//        }
+//
+//        &> table {
+//            margin: 16px;
+//        }
+//    }
+//
+//    &> .row {
+//        display: flex;
+//        flex-direction: column;
+//        align-items: stretch;
+//
+//        @media screen and (min-width: 920px) {
+//            flex-direction: row;
+//
+//            &> .panel {
+//                .flex();
+//
+//                &.ability {
+//                    flex: 0 0 333px;
+//                }
+//            }
+//        }
+//    }
+//
+//    .row {
+//        .layout(row);
+//
+//        &> div {
+//            flex: 1 1 0;
+//        }
+//        &> button {
+//            flex: 0 0 0;
+//        }
+//    }
+//
+//    .ability {
+//        display: flex;
+//        align-items: flex-end;
+//        justify-content: center;
+//
+//        button {
+//            position: relative;
+//            left: 300px;
+//            margin-right: -33px;
+//        }
+//    }
+//
+//    .money {
+//        .layout(row);
+//    }
+//}

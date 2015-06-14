@@ -1,81 +1,60 @@
 'use strict';
-var hash = require('../../hash');
+var hash = require('../../../hash');
+var Card = require('../../card.jsx');
+var Field = require('../../field');
+var Row = require('../../row');
 var React = require('react');
 var MUI = require('material-ui');
 var TextField = MUI.TextField;
 var Checkbox = MUI.Checkbox;
 var Tabs = MUI.Tabs;
 var Tab = MUI.Tab;
-var Paper = MUI.Paper;
 var FlatButton = MUI.FlatButton;
 
 var WeaponTab = React.createClass({
     handleRemove: function () {
-        this.props.onRemove(this.props.index);
+        var onRemove = this.props.onRemove;
+        if (!this.props.readOnly && onRemove) {
+            onRemove('weapons', this.props.index);
+        }
+    },
+    handleChange: function (path, value) {
+        var onChange = this.props.onChange;
+        if (!this.props.readOnly && onChange) {
+            onChange('weapons[' + this.props.index + '].' + path, value);
+        }
     },
     render: function () {
-        var _onChange = this.props.onChange;
         var index = this.props.index;
-
-        var inputContainer = function (key, label, options) {
-            options = options || {};
-
-            if (options.type == 'checkbox') {
-                var onCheck = function (event, checked) {
-                    _onChange(['weapons', index, key].join('.'), checked);
-                }; 
-
-                return (
-                        <Checkbox
-                            floatingLabelText={label}
-                            value={hash.get(this.props.data, key)} 
-                            readOnly={options.readOnly}
-                            disabled={options.disabled}
-                            onCheck={onCheck} />
-                       );
-            } else {
-                var onChange = function (event) {
-                    _onChange(['weapons', index, key].join('.'), event.target.value);
-                }; 
-
-                return (
-                        <TextField
-                            floatingLabelText={label}
-                            value={hash.get(this.props.data, key)} 
-                            readOnly={options.readOnly}
-                            disabled={options.disabled}
-                            onChange={onChange} />
-                       );
-            }
-        }.bind(this);
+        var data = this.props.data;
+        var readOnly = this.props.readOnly;
 
         return (
-                <div>
-                    <div className="row">
-                        {inputContainer('name', '武器')}
+                <div style={{padding: '16px'}}>
+                    <Row>
+                        <Field path="name" label="武器" data={data} readOnly={readOnly} onChange={this.handleChange}/>
                         <FlatButton onClick={this.handleRemove}>×</FlatButton>
-                    </div>
-
-                    <div className="row">
-                        {inputContainer('to_use', '用法')}
-                        {inputContainer('str_req', '必筋', {type: 'number'})}
-                    </div>
-                    <div className="row">
-                        {inputContainer('accuracy_correction', '命中補正', {type: 'number'})}
-                        {inputContainer('accuracy', '命中', {type: 'number', readOnly: true})}
-                    </div>
-                    <div className="row">
-                        {inputContainer('damage_correction', 'ダメージ補正', {type: 'number'})}
-                        {inputContainer('extra_damage', '追加ダメージ', {type: 'number', readOnly: true})}
-                    </div>
-                    <div className="row">
-                        {inputContainer('impact', '威力', {type: 'number'})}
-                        {inputContainer('critical', 'C値', {type: 'number'})}
-                    </div>
-                    <Paper>
+                    </Row>
+                    <Row>
+                        <Field path="to_use" label="用法" data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                        <Field path="str_req" label="必筋" type="number" data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                    </Row>
+                    <Row>
+                        <Field path="accuracy_correction" label="命中補正" type="number" data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                        <Field path="accuracy" label="命中" type="number" data={data} readOnly={true} onChange={this.handleChange}/>
+                    </Row>
+                    <Row>
+                        <Field path="damage_correction" label="ダメージ補正" type="number" data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                        <Field path="extra_damage" label="追加ダメージ" type="number" data={data} readOnly={true} onChange={this.handleChange}/>
+                    </Row>
+                    <Row>
+                        <Field path="impact" label="威力" type="number" data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                        <Field path="critical" label="C値" type="number" data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                    </Row>
+                    <Card style={{margin: '16px 0 0'}}>
                         <table>
                             <thead>
-                                <tr>
+                                <tr key="header">
                                     <th>2</th>
                                     <th>3</th>
                                     <th>4</th>
@@ -90,48 +69,105 @@ var WeaponTab = React.createClass({
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <tr key="value">
                                     <td>*</td>
-                                    <td>{inputContainer('impacts.0', null, {type: 'number'})}</td>
-                                    <td>{inputContainer('impacts.1', null, {type: 'number'})}</td>
-                                    <td>{inputContainer('impacts.2', null, {type: 'number'})}</td>
-                                    <td>{inputContainer('impacts.3', null, {type: 'number'})}</td>
-                                    <td>{inputContainer('impacts.4', null, {type: 'number'})}</td>
-                                    <td>{inputContainer('impacts.5', null, {type: 'number'})}</td>
-                                    <td>{inputContainer('impacts.6', null, {type: 'number'})}</td>
-                                    <td>{inputContainer('impacts.7', null, {type: 'number'})}</td>
-                                    <td>{inputContainer('impacts.8', null, {type: 'number'})}</td>
-                                    <td>{inputContainer('impacts.9', null, {type: 'number'})}</td>
+                                    <td>
+                                        <Field path="impact_3" type="number"
+                                            data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                                    </td>
+                                    <td>
+                                        <Field path="impact_4" type="number"
+                                            data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                                    </td>
+                                    <td>
+                                        <Field path="impact_5" type="number"
+                                            data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                                    </td>
+                                    <td>
+                                        <Field path="impact_6" type="number"
+                                            data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                                    </td>
+                                    <td>
+                                        <Field path="impact_7" type="number"
+                                            data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                                    </td>
+                                    <td>
+                                        <Field path="impact_8" type="number"
+                                            data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                                    </td>
+                                    <td>
+                                        <Field path="impact_9" type="number"
+                                            data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                                    </td>
+                                    <td>
+                                        <Field path="impact_10" type="number"
+                                            data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                                    </td>
+                                    <td>
+                                        <Field path="impact_11" type="number"
+                                            data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                                    </td>
+                                    <td>
+                                        <Field path="impact_12" type="number"
+                                            data={data} readOnly={readOnly} onChange={this.handleChange}/>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
-                    </Paper>
+                    </Card>
                 </div>
                );
     }
 });
 
 var Weapon = React.createClass({
+    handleAppend: function () {
+        var onAppend = this.props.onAppend;
+        if (!this.props.readOnly && onAppend) {
+            onAppend('weapons');
+        }
+    },
+    handleRemove: function () {
+        var selectedIndex = this.refs.tabs.state.selectedIndex;
+        if (selectedIndex == this.props.data.weapons.length - 1 && selectedIndex > 0) {
+            this.refs.tabs.setState({
+                selectedIndex: selectedIndex - 1
+            });
+        }
+        this.props.onRemove.apply(this, arguments);
+    },
+    handleChange: function (index) {
+        if (index == this.props.data.weapons.length && index > 0) {
+            this.refs.tabs.setState({
+                selectedIndex: index - 1
+            });
+        }
+    },
     render: function () {
         return (
-                <Paper className="weapon">
-                    <Tabs>
+                <Card className="weapon" style={{padding: 0}}>
+                    <Tabs ref="tabs" onChange={this.handleChange}>
                         {
                             (this.props.data.weapons || []).map(function (weapon, index) {
                                 return (
-                                        <Tab label={weapon.name}>
+                                        <Tab key={index} label={weapon.name}>
                                             <WeaponTab
                                                 index={index}
                                                 data={weapon}
                                                 onChange={this.props.onChange}
-                                                onRemove={this.props.onRemove} />
+                                                onRemove={this.handleRemove} />
                                         </Tab>
                                        );
                             }, this)
+                            .concat([(
+                                        <Tab key="append" label="＋" onActive={this.handleAppend}>
+                                        <FlatButton label="武器を追加" onClick={this.handleAppend}/>
+                                        
+                                        </Tab>
+                                     )])
                         }
                     </Tabs>
-                    <FlatButton onClick={this.props.onAppend}>＋</FlatButton>
-                </Paper>
+                </Card>
             );
     }
 });

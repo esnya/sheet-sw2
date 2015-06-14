@@ -1,105 +1,127 @@
 'use strict';
 
 var React = require('react');
-var MUI = require('material-ui');
-var TextField = MUI.TextField;
-var Checkbox = MUI.Checkbox;
-var FlatButton = MUI.FlatButton;
-var ItemTable = require('./ItemTable');
+var mui = require('material-ui');
+var hash = require('../hash');
+var Field = require('./field.jsx');
+var TextField = mui.TextField;
+var Checkbox = mui.Checkbox;
+var FlatButton = mui.FlatButton;
 
-var InputTable = React.createClass({
-    render: function () {
-        var headline = this.props.keys.map(function (key) {
-            return (
-                    <th>{key.label}</th>
-                   )
-        });
-        if (!this.props.readOnly) {
-            headline.push(<th><FlatButton onClick={this.props.onAppend}>＋</FlatButton></th>);
+var ItemTable = React.createClass({
+    handleChange: function (index, path, value) {
+        if (!this.props.readOnly && this.props.onChange) {
+            this.props.onChange(index, path, value);
         }
+    },
+    handleAppend: function () {
+        if (!this.props.readOnly && this.props.onAppend) {
+            this.props.onAppend();
+        }
+    },
+    handleRemove: function (index) {
+        if (!this.props.readOnly && this.props.onRemove) {
+            this.props.onRemove(index);
+        }
+    },
+    render: function () {
+        var data = this.props.data;
+        var columns = this.props.columns || this.props.cols;
+        var readOnly = this.props.readOnly;
+
+        var head = columns.map(function (column, index) {
+            return (<th key={index}>{column.label}</th>);
+        });
+        if (!readOnly) {
+            head.push(<th key="button"><FlatButton onClick={this.handleAppend}>＋</FlatButton></th>);
+        }
+
+        var body = (data || []).map(function (data, index) {
+            return (<Row
+                        key={index}
+                        index={index}
+                        data={data}
+                        columns={columns}
+                        readOnly={readOnly}
+                        onChange={this.handleChange}
+                        onRemove={this.handleRemove} />);
+        }, this);
+
         return (
                 <table>
                     <thead>
-                        <tr>{headline}</tr>
-                        {this.props.header}
+                        <tr>{head}</tr>
                     </thead>
                     <tbody>
-                        {(this.props.data || []).map(
-                                function (line, index) {
-                                    return (
-                                            <ItemTable.Row
-                                                line={line}
-                                                index={index}
-                                                keys={this.props.keys}
-                                                onChange={this.props.onChange}
-                                                onRemove={this.props.onRemove} />
-                                                );
-                                }, this)}
+                        {body}
                     </tbody>
                     <tfoot>
-                        {this.props.footer}
+                        {this.props.children}
                     </tfoot>
                 </table>
                );
     }
 });
 
-ItemTable.Column = React.createClass({
-    render: function () {
-        var key = this.props.def;
-        var index = this.props.index;
-        var _onChange = this.props.onChange;
-
-        if (key.type == 'checkbox') {
-            var onCheck = function (event, checked) {
-                _onChange(index, key.key, checked);
-            };
-            return (
-                    <td>
-                        <Checkbox
-                            hintText={key.label}
-                            value={this.props.value}
-                            readOnly={key.readOnly}
-                            disabled={key.disabled}
-                            onCheck={onCheck} />
-                    </td>
-                   );
-        } else {
-            var onChange = function (event) {
-                _onChange(index, key.key, event.target.value);
-            };
-            return (
-                    <td>
-                        <TextField
-                            hintText={key.label}
-                            value={this.props.value}
-                            readOnly={key.readOnly}
-                            disabled={key.disabled}
-                            onChange={onChange} />
-                    </td>
-                   );
+var Row = React.createClass({
+    handleChange: function (path, value) {
+        if (!this.props.readOnly && this.props.onChange) {
+            this.props.onChange(this.props.index, path, value);
         }
-    }
-});
-
-ItemTable.Row = React.createClass({
+    },
+    handleRemove: function () {
+        if (!this.props.readOnly && this.props.onRemove) {
+            this.props.onRemove(this.props.index);
+        }
+    },
     render: function () {
-        var line = this.props.line;
-        var index = this.props.index;
+        //var index = this.props.index;
+        var data = this.props.data;
+        var columns = this.props.columns || this.props.cols;
+        var readOnly = this.props.readOnly;
+        var onChange = this.props.onChange;
+        var onRemove = this.props.onRemove;
 
-        var cols = this.props.keys.map(function (key) {
-            return (<ItemTable.Column def={key} value={line[key.key]} index={index} onChange={this.props.onChange}/>);
+        var cols = columns.map(function (column, index) {
+            return (<Column
+                        key={index}
+                        data={data}
+                        path={column.path}
+                        type={column.type}
+                        options={column.options}
+                        readOnly={readOnly || column.readOnly}
+                        disabled={column.disabled}
+                        multiline={column.multiline}
+                        onChange={this.handleChange}/>);
         }, this);
 
-        var _onRemove = this.props.onRemove;
-        if (!this.props.readOnly && _onRemove) {
-            var handler = function () {
-                _onRemove(index);
-            };
-            cols.push(<td><FlatButton onClick={handler}>×</FlatButton></td>);
+        if (!readOnly && onRemove) {
+            cols.push(<td key="button"><FlatButton onClick={this.handleRemove}>×</FlatButton></td>);
         }
-        return (<tr>{cols}</tr>);
+
+        return (<tr>{cols}</tr>)
     }
 });
 
-module.exports = InputTable;
+var Column = React.createClass({
+    render: function () {
+        //var index = this.props.index;
+        var data = this.props.data;
+        var path = this.props.path;
+        var type = this.props.type;
+        var options = this.props.options;
+        var readOnly = this.props.readOnly;
+        var disabled = this.props.disabled;
+        var multiline = this.props.multiline;
+        var onChange = this.props.onChange;
+
+        var style = hash.merge({
+            width: 'auto',
+            flex: 'none'
+        }, this.props.style || {});
+
+        return (<td><Field data={data} path={path} type={type} options={options} onChange={onChange} /></td>);
+    }
+});
+
+module.exports = ItemTable;

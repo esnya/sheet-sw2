@@ -30,11 +30,54 @@ var Skill = {
         _skill('ウォーリーダー', 'その他', 'B'),
         _skill('ミスティック', 'その他', 'B')
     ],
+    get: function (name) {
+        return Skill.list.find(function (skill) {
+            return skill.name == name;
+        });
+    },
     isMagicSkill: function (name) {
         return !!Skill.list.find(function (skill) {
             return skill.name == name && skill.type == '魔法';
         });
+    },
+    isEvasionSkill: function (name) {
+        return name == 'デーモンルーラー' 
+            || !!Skill.list.find(function (skill) {
+                return skill.name == name && skill.type == '戦士';
+            });
+    },
+    table: [
+        500,
+        1000,
+        1000,
+        1500,
+        2000,
+        2500,
+        3000,
+        3500,
+        4000,
+        5000,
+        6500,
+    ],
+    next: function (name, level) {
+        var skill = Skill.get(name);
+        if (skill) {
+            return Skill.table[(+level) + (
+                    (skill.table == 'A') ? 1 : 0
+                    )];
+        }
+    },
+    total: function (name, level) {
+        var skill = Skill.get(name);
+        if (skill) {
+            return level == 0
+                ? 0
+                : Skill.table.slice(Skill.get(name).table == 'A' ? 1 : 0)
+                .slice(0, +level)
+                .reduce(function (a, b) { return a + b; }, 0);
+        }
     }
+
 };
 
 module.exports = Skill;

@@ -2,9 +2,10 @@
 
 var React = require('react');
 
-var Ability = React.createClass({
+var Rader = React.createClass({
     render: function () {
         var data = this.props.data;
+        var style = this.props.style || {};
         var ability = data.ability;
 
         var radius = this.props.radius || 120;
@@ -49,7 +50,7 @@ var Ability = React.createClass({
         };
 
         return (
-                <svg className="rader" width={size * 2} height={size * 2}>
+                <svg className="rader" width={size * 2} height={size * 2} style={style}>
                     <g style={{transform: 'translate(' + size + 'px, ' + size + 'px)'}}>
                         <g className="rader">
                             <polygon points={rlist[4].map(rader)}/>
@@ -60,9 +61,9 @@ var Ability = React.createClass({
                         </g>
                         <g className="grid">
                             {points.map(
-                                    function (p) {
+                                    function (p, i) {
                                         return (
-                                                <line x1="0" y1="0" x2={p[0] * radius} y2={p[1] * radius} />
+                                                <line key={i} x1="0" y1="0" x2={p[0] * radius} y2={p[1] * radius} />
                                                );
                                     })
                             }
@@ -86,7 +87,7 @@ var Ability = React.createClass({
 
                                         var text = label.split('\n').map(
                                                 function (line, n) {
-                                                    return (<text x={x} y={y + n * 18 - 7.5}>{line}</text>);
+                                                    return (<text key={n} x={x} y={y + n * 18 - 7.5}>{line}</text>);
                                                 });
 
                                         return text;
@@ -99,7 +100,7 @@ var Ability = React.createClass({
                                     var r = radius + margin / 3 * 2;
                                     var x = (p1[0] + p2[0]) / 2 * r;
                                     var y = (p1[1] + p2[1]) / 2 * r;
-                                    return (<text className="l" x={x} y={y}>{label}</text>);
+                                    return (<text key={n} className="l" x={x} y={y}>{label}</text>);
                                 })
                             }
                         </g>
@@ -109,4 +110,4 @@ var Ability = React.createClass({
     }
 });
 
-module.exports = Ability;
+module.exports = Rader;

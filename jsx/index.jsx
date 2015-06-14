@@ -1,6 +1,6 @@
 'use strict';
 
-var SW2CharacterSheet = require('./component/sw2/CharacterSheet');
+var SW2CharacterSheet = require('./component/sw2/charactersheet');
 var React = require('react');
 
 require("react-tap-event-plugin")();

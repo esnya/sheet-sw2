@@ -7,7 +7,7 @@ var Checkbox = MUI.Checkbox;
 var FlatButton = MUI.FlatButton;
 var hash = require('../../../hash');
 var Skill = require('./skill');
-var ItemTable = require('../../ItemTable');
+var ItemTable = require('../../itemtable');
 var Card = require('../../card');
 
 var Row = require('../../row');

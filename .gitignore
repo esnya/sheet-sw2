@@ -1,5 +1,5 @@
 node_modules
 /js
 /css
-index.js*
-bundle.js*
+/index.js*
+/bundle.js*
